@@ -1,0 +1,24 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Run Python Demo",
+			"type": "shell",
+			"command": "python",
+			"args": [
+				"demo.py"
+			],
+			"group": "build",
+			"isBackground": false,
+			"options": {
+				"cwd": "${workspaceFolder}/python"
+			},
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared"
+			}
+		}
+	]
+}

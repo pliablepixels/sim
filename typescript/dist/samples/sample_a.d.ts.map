@@ -1,0 +1,1 @@
+{"version":3,"file":"sample_a.d.ts","sourceRoot":"","sources":["../../src/samples/sample_a.ts"],"names":[],"mappings":"AAEA,wBAAgB,aAAa,CAAC,MAAM,EAAE,MAAM,GAAG,MAAM,CAGpD;AAED,wBAAgB,SAAS,CAAC,IAAI,EAAE,MAAM,GAAG,MAAM,CAK9C;AAED,qBAAa,MAAM;IACf,OAAO,CAAC,MAAM,CAAS;gBAEX,MAAM,EAAE,MAAM;IAI1B,IAAI,IAAI,MAAM;IAId,aAAa,IAAI,MAAM;CAG1B"}

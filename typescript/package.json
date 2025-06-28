@@ -1,0 +1,24 @@
+{
+  "name": "code-similarity-analyzer",
+  "version": "1.0.0",
+  "description": "TypeScript implementation of code similarity analyzer",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/demo.js",
+    "dev": "ts-node src/demo.ts",
+    "demo": "npm run build && npm start",
+    "clean": "rm -rf dist"
+  },
+  "keywords": ["code", "similarity", "analysis", "typescript"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "readline-sync": "^1.4.10"
+  }
+}
