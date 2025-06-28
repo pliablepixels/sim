@@ -1,6 +1,6 @@
 # Code Similarity Analyzer
 
-A comprehensive code similarity analyzer that can compare source code files across different programming languages using multiple heuristics. Available in both **Python** and **TypeScript** implementations.
+A code similarity analyzer that can compare source code files across different programming languages using multiple heuristics. Available in both **Python** and **TypeScript** implementations.
 
 ## Features
 
