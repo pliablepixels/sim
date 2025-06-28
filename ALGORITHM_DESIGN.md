@@ -9,17 +9,19 @@
 6. [Implementation Details](#implementation-details)
 7. [Performance Considerations](#performance-considerations)
 8. [Configuration and Tuning](#configuration-and-tuning)
-9. [Future Enhancements](#future-enhancements)
+9. [Language-Aware Similarity Enhancement](#language-aware-similarity-enhancement)
+10. [Future Enhancements](#future-enhancements)
 
 ## Overview
 
-The Code Similarity Analyzer is a multi-heuristic algorithm designed to detect similarities between source code files across different programming languages. The algorithm employs a layered approach combining lexical analysis, structural pattern recognition, and multiple similarity metrics to provide robust and accurate similarity detection.
+The Code Similarity Analyzer is a multi-heuristic algorithm designed to detect similarities between source code files across different programming languages. The algorithm employs a layered approach combining lexical analysis, structural pattern recognition, and multiple similarity metrics to provide similarity detection.
 
 ### Key Design Principles
 - **Language Agnostic**: Works with any text-based programming language
-- **Multi-dimensional Analysis**: Combines multiple similarity metrics for accuracy
+- **Language-Aware Enhancement**: Detects programming languages and optimizes analysis for same-language comparisons
+- **Multi-dimensional Analysis**: Combines multiple similarity metrics
 - **Configurable Sensitivity**: Adjustable thresholds for different use cases
-- **Scalable Architecture**: Efficient processing for large codebases
+- **Scalable Architecture**: Processes large codebases efficiently
 
 ## Problem Statement
 
@@ -28,7 +30,7 @@ The Code Similarity Analyzer is a multi-heuristic algorithm designed to detect s
 2. **Syntactic Variations**: Handling different coding styles, formatting, and conventions
 3. **Semantic Equivalence**: Identifying functionally similar code with different implementations
 4. **Noise Reduction**: Filtering out comments, whitespace, and non-meaningful differences
-5. **Performance**: Efficiently processing large files while maintaining accuracy
+5. **Performance**: Processing large files while maintaining accuracy
 
 ### Target Use Cases
 - Code plagiarism detection
@@ -42,32 +44,38 @@ The Code Similarity Analyzer is a multi-heuristic algorithm designed to detect s
 ```
 Input Files (A, B)
         ↓
-[1] Preprocessing Phase
-    ├── Comment Removal
-    ├── Whitespace Normalization
-    ├── Case Standardization
-    └── Line Filtering
+[0] Language Detection Phase ← NEW
+    ├── Content Analysis
+    ├── Pattern Recognition  
+    ├── Confidence Scoring
+    └── Language Classification
         ↓
-[2] Feature Extraction Phase
-    ├── Tokenization
-    ├── Keyword Detection
-    ├── Operator Recognition
-    └── Pattern Identification
+[1] Enhanced Preprocessing Phase ← MODIFIED
+    ├── Language-Specific Comment Removal
+    ├── Enhanced Whitespace Normalization
+    ├── Language-Aware Case Standardization
+    └── Intelligent Line Filtering
         ↓
-[3] Similarity Calculation Phase
-    ├── Token-based Metrics
-    ├── Sequence Analysis
-    └── Structural Comparison
+[2] Language-Enhanced Feature Extraction ← MODIFIED
+    ├── Context-Aware Tokenization
+    ├── Enhanced Keyword Detection
+    ├── Language-Specific Pattern Recognition
+    └── Semantic Feature Identification
         ↓
-[4] Matching Phase
-    ├── Line-to-Line Comparison
-    ├── Best Match Selection
-    └── Threshold Filtering
+[3] Adaptive Similarity Calculation ← MODIFIED
+    ├── Language-Weighted Token Metrics
+    ├── Enhanced Sequence Analysis
+    └── Context-Aware Structural Comparison
         ↓
-[5] Reporting Phase
-    ├── Statistics Calculation
-    ├── Distribution Analysis
-    └── Report Generation
+[4] Intelligent Matching Phase ← MODIFIED
+    ├── Language-Optimized Comparison
+    ├── Adaptive Threshold Application
+    └── Context-Sensitive Filtering
+        ↓
+[5] Enhanced Reporting Phase
+    ├── Language-Aware Statistics
+    ├── Context-Enriched Analysis
+    └── Intelligent Report Generation
 ```
 
 ## Core Components
@@ -201,8 +209,8 @@ def find_similar_lines(linesA, linesB, threshold):
 ## Performance Considerations
 
 ### Scalability Limits
-- **File Size**: Efficiently handles files up to 10MB
-- **Line Count**: Optimal for files with <10,000 lines
+- **File Size**: Handles files up to 10MB
+- **Line Count**: Optimized for files with <10,000 lines
 - **Memory Usage**: ~O(file_size) memory footprint
 
 ### Performance Optimizations
@@ -274,11 +282,286 @@ weights = {'sequence': 0.2, 'jaccard': 0.3, 'structural': 0.5}
 - **CI/CD Integration**: Automated similarity checking in pipelines
 - **API Services**: RESTful API for similarity analysis
 
+## Language-Aware Similarity Enhancement
+
+### Content-Based Language Detection
+
+**Purpose**: Detect programming languages from file content to enhance similarity accuracy for same-language comparisons.
+
+#### Language Detection Strategy
+
+**Multi-Pattern Analysis**:
+```python
+LANGUAGE_SIGNATURES = {
+    'python': {
+        'keywords': ['def ', 'class ', 'import ', 'from ', 'lambda', 'yield'],
+        'patterns': [
+            r'^\s*def\s+\w+\s*\(',
+            r'^\s*class\s+\w+\s*:',
+            r'^\s*import\s+\w+',
+            r'^\s*from\s+\w+\s+import',
+            r'print\s*\(',
+            r'__\w+__'
+        ],
+        'operators': ['==', '!=', 'and', 'or', 'not', 'in'],
+        'exclusions': [';$', '{\s*$', 'function\s*\(']
+    },
+    'javascript': {
+        'keywords': ['function', 'const', 'let', 'var', 'async', 'await'],
+        'patterns': [
+            r'^\s*function\s+\w+\s*\(',
+            r'^\s*(const|let|var)\s+\w+\s*=',
+            r'=>',
+            r'console\.log\s*\(',
+            r'document\.',
+            r'window\.'
+        ],
+        'operators': ['===', '!==', '&&', '||'],
+        'exclusions': ['def ', 'import ', '__\w+__']
+    },
+    'java': {
+        'keywords': ['public', 'private', 'static', 'class', 'interface'],
+        'patterns': [
+            r'^\s*public\s+class\s+\w+',
+            r'^\s*public\s+static\s+void\s+main',
+            r'System\.out\.print',
+            r'@\w+',
+            r';\s*$'
+        ],
+        'operators': ['==', '!=', '&&', '||'],
+        'exclusions': ['def ', 'function', '=>']
+    }
+}
+```
+
+**Confidence Scoring**:
+```python
+def detect_language_confidence(content):
+    scores = {}
+    for language, signature in LANGUAGE_SIGNATURES.items():
+        score = 0
+        
+        # Keyword presence (weight: 2)
+        for keyword in signature['keywords']:
+            score += content.count(keyword) * 2
+        
+        # Pattern matching (weight: 3)
+        for pattern in signature['patterns']:
+            matches = len(re.findall(pattern, content, re.MULTILINE))
+            score += matches * 3
+        
+        # Operator presence (weight: 1)
+        for operator in signature['operators']:
+            score += content.count(operator)
+        
+        # Exclusion penalties (weight: -5)
+        for exclusion in signature['exclusions']:
+            penalty = len(re.findall(exclusion, content))
+            score -= penalty * 5
+        
+        scores[language] = max(0, score)
+    
+    return scores
+```
+
+#### Enhanced Same-Language Processing
+
+**Language-Specific Comment Removal**:
+```python
+LANGUAGE_COMMENT_PATTERNS = {
+    'python': [r'#.*$', r'""".*?"""', r"'''.*?'''"],
+    'javascript': [r'//.*$', r'/\*.*?\*/', r'`.*?`'],
+    'java': [r'//.*$', r'/\*.*?\*/', r'/\*\*.*?\*/'],
+    'cpp': [r'//.*$', r'/\*.*?\*/'],
+    'sql': [r'--.*$', r'/\*.*?\*/']
+}
+```
+
+**Language-Specific Keyword Enhancement**:
+```python
+ENHANCED_KEYWORDS = {
+    'python': {
+        'control': ['if', 'elif', 'else', 'for', 'while', 'try', 'except', 'finally'],
+        'functions': ['def', 'lambda', 'yield', 'return'],
+        'classes': ['class', 'self', '__init__', 'super'],
+        'imports': ['import', 'from', 'as'],
+        'data': ['list', 'dict', 'tuple', 'set', 'str', 'int', 'float']
+    },
+    'javascript': {
+        'control': ['if', 'else', 'for', 'while', 'switch', 'case', 'break'],
+        'functions': ['function', 'arrow', '=>', 'async', 'await', 'return'],
+        'variables': ['const', 'let', 'var'],
+        'objects': ['class', 'extends', 'super', 'this'],
+        'modules': ['import', 'export', 'require', 'module']
+    },
+    'java': {
+        'access': ['public', 'private', 'protected'],
+        'modifiers': ['static', 'final', 'abstract', 'synchronized'],
+        'types': ['class', 'interface', 'enum', 'extends', 'implements'],
+        'primitives': ['int', 'double', 'boolean', 'char', 'byte']
+    }
+}
+```
+
+#### Modified Algorithm Architecture
+
+**Enhanced Flow**:
+```
+Input Files (A, B)
+        ↓
+[0] Language Detection Phase ← NEW
+    ├── Content Analysis
+    ├── Pattern Recognition  
+    ├── Confidence Scoring
+    └── Language Classification
+        ↓
+[1] Enhanced Preprocessing Phase ← MODIFIED
+    ├── Language-Specific Comment Removal
+    ├── Enhanced Whitespace Normalization
+    ├── Language-Aware Case Standardization
+    └── Intelligent Line Filtering
+        ↓
+[2] Language-Enhanced Feature Extraction ← MODIFIED
+    ├── Context-Aware Tokenization
+    ├── Enhanced Keyword Detection
+    ├── Language-Specific Pattern Recognition
+    └── Semantic Feature Identification
+        ↓
+[3] Adaptive Similarity Calculation ← MODIFIED
+    ├── Language-Weighted Token Metrics
+    ├── Enhanced Sequence Analysis
+    └── Context-Aware Structural Comparison
+        ↓
+[4] Intelligent Matching Phase ← MODIFIED
+    ├── Language-Optimized Comparison
+    ├── Adaptive Threshold Application
+    └── Context-Sensitive Filtering
+        ↓
+[5] Enhanced Reporting Phase
+    ├── Language-Aware Statistics
+    ├── Context-Enriched Analysis
+    └── Intelligent Report Generation
+```
+
+#### Implementation Enhancements
+
+**Language-Aware Similarity Calculator**:
+```python
+def calculate_enhanced_similarity(lineA, lineB, language_context):
+    # Base similarity calculation
+    base_similarity = calculate_line_similarity(lineA, lineB)
+    
+    if language_context['same_language']:
+        # Enhanced processing for same language
+        lang = language_context['language']
+        
+        # Language-specific tokenization
+        tokensA = enhanced_tokenize(lineA, lang)
+        tokensB = enhanced_tokenize(lineB, lang)
+        
+        # Enhanced keyword matching
+        keyword_similarity = calculate_keyword_similarity(
+            tokensA, tokensB, ENHANCED_KEYWORDS[lang]
+        )
+        
+        # Semantic pattern matching
+        semantic_similarity = calculate_semantic_similarity(
+            lineA, lineB, lang
+        )
+        
+        # Weighted combination for same language
+        enhanced_similarity = (
+            0.3 * base_similarity +
+            0.4 * keyword_similarity +
+            0.3 * semantic_similarity
+        )
+        
+        return min(1.0, enhanced_similarity * 1.1)  # Adjustment for same language
+    
+    return base_similarity
+```
+
+**Semantic Pattern Recognition**:
+```python
+SEMANTIC_PATTERNS = {
+    'python': {
+        'function_def': r'def\s+(\w+)\s*\([^)]*\):',
+        'class_def': r'class\s+(\w+)(?:\([^)]*\))?:',
+        'import_stmt': r'(?:from\s+\w+\s+)?import\s+([\w,\s]+)',
+        'list_comp': r'\[[^]]*for\s+\w+\s+in[^]]*\]',
+        'dict_comp': r'\{[^}]*for\s+\w+\s+in[^}]*\}'
+    },
+    'javascript': {
+        'function_def': r'(?:function\s+(\w+)|(\w+)\s*=\s*(?:function|\([^)]*\)\s*=>))',
+        'class_def': r'class\s+(\w+)(?:\s+extends\s+\w+)?',
+        'arrow_func': r'(?:\([^)]*\)|\w+)\s*=>\s*',
+        'async_func': r'async\s+(?:function\s+\w+|\([^)]*\)\s*=>)',
+        'template_literal': r'`[^`]*\$\{[^}]*\}[^`]*`'
+    }
+}
+```
+
+#### Adaptive Thresholds
+
+**Language-Specific Threshold Adjustment**:
+```python
+LANGUAGE_THRESHOLD_MODIFIERS = {
+    'same_language': {
+        'python': {'boost': 0.05, 'min_threshold': 0.6},
+        'javascript': {'boost': 0.03, 'min_threshold': 0.65},
+        'java': {'boost': 0.07, 'min_threshold': 0.7}
+    },
+    'cross_language': {
+        'default': {'penalty': 0.1, 'max_threshold': 0.8}
+    }
+}
+
+def get_adaptive_threshold(base_threshold, language_context):
+    if language_context['same_language']:
+        lang = language_context['language']
+        modifier = LANGUAGE_THRESHOLD_MODIFIERS['same_language'].get(lang, {})
+        boost = modifier.get('boost', 0.02)
+        return min(1.0, base_threshold - boost)
+    else:
+        penalty = LANGUAGE_THRESHOLD_MODIFIERS['cross_language']['default']['penalty']
+        return min(0.95, base_threshold + penalty)
+```
+
+#### Enhanced Reporting
+
+**Language-Aware Report Structure**:
+```python
+{
+    'language_detection': {
+        'file_a_language': 'python',
+        'file_b_language': 'python', 
+        'confidence_scores': {'python': 0.95, 'javascript': 0.12},
+        'same_language': True,
+        'detection_method': 'content_analysis'
+    },
+    'enhanced_analysis': {
+        'language_specific_processing': True,
+        'semantic_features_used': ['function_definitions', 'class_structures'],
+        'keyword_enhancement_applied': True,
+        'adaptive_threshold': 0.65
+    },
+    'similarity_breakdown': {
+        'base_similarity': 0.72,
+        'keyword_similarity': 0.89,
+        'semantic_similarity': 0.81,
+        'final_similarity': 0.84
+    }
+    # ... existing fields
+}
+```
+
+This enhancement maintains cross-language capability while improving accuracy for same-language comparisons through content-based language detection and language-specific optimizations.
+
 ## Conclusion
 
-The Code Similarity Analyzer algorithm provides a robust, multi-dimensional approach to code similarity detection. By combining preprocessing normalization, feature extraction, and weighted similarity metrics, it achieves high accuracy across different programming languages while maintaining reasonable performance characteristics.
+The Code Similarity Analyzer algorithm provides a multi-dimensional approach to code similarity detection. By combining preprocessing normalization, feature extraction, and weighted similarity metrics, it offers functionality across different programming languages while maintaining reasonable performance characteristics.
 
-The algorithm's modular design allows for easy customization and extension, making it suitable for a wide range of applications from academic plagiarism detection to enterprise code quality analysis.
+The algorithm's modular design allows for customization and extension, making it suitable for various applications from academic plagiarism detection to enterprise code quality analysis.
 
 ---
 
