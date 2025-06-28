@@ -52,8 +52,8 @@ async function demoComparison() {
     const analyzer = new CodeSimilarityAnalyzer_1.CodeSimilarityAnalyzer();
     // Define paths to our sample files
     const currentDir = process.cwd();
-    const fileA = path.join(currentDir, 'src', 'samples', 'sample_a.ts');
-    const fileB = path.join(currentDir, 'src', 'samples', 'sample_c.ts');
+    const fileA = path.join(path.dirname(currentDir), 'samples', 'sample_a.ts');
+    const fileB = path.join(path.dirname(currentDir), 'samples', 'sample_c.ts');
     console.log(`Comparing:\n  File A: ${fileA}\n  File B: ${fileB}\n`);
     // Test with different similarity thresholds
     const thresholds = [0.5, 0.7, 0.9];

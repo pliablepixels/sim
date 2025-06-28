@@ -17,24 +17,25 @@ A code similarity analyzer that can compare source code files across different p
 ## Project Structure
 
 ```
-├── README.md            # Main documentation
-├── ALGORITHM_DESIGN.md  # Detailed algorithm design document
-├── python/              # Python implementation
-│   ├── demo.py         # Demo script for Python version
-│   ├── try.py          # Main analyzer class
-│   ├── sample_a.py     # Sample Python file A
-│   ├── sample_b.js     # Sample JavaScript file
-│   └── sample_c.py     # Sample Python file C (modified copy of A)
-└── typescript/         # TypeScript implementation
-    ├── package.json    # NPM configuration
-    ├── tsconfig.json   # TypeScript configuration
+├── README.md                    # Main documentation
+├── ALGORITHM_DESIGN.md          # Detailed algorithm design document
+├── samples/                     # Unified sample files for all languages
+│   ├── sample_a.py             # Sample Python file A
+│   ├── sample_c.py             # Sample Python file C (modified copy of A)
+│   ├── sample_a.ts             # Sample TypeScript file A
+│   ├── sample_c.ts             # Sample TypeScript file C
+│   ├── sample_a.java           # Sample Java file A
+│   └── sample_c.java           # Sample Java file C
+├── python/                      # Python implementation
+│   ├── demo.py                 # Demo script for Python version
+│   └── try.py                  # Main analyzer class
+└── typescript/                  # TypeScript implementation
+    ├── package.json            # NPM configuration
+    ├── tsconfig.json           # TypeScript configuration
     ├── src/
     │   ├── CodeSimilarityAnalyzer.ts  # Main analyzer class
-    │   ├── demo.ts                    # Demo script
-    │   └── samples/
-    │       ├── sample_a.ts           # Sample TypeScript file A
-    │       └── sample_c.ts           # Sample TypeScript file C
-    └── dist/           # Compiled JavaScript files
+    │   └── demo.ts                    # Demo script
+    └── dist/                   # Compiled JavaScript files
 ```
 
 ## Algorithm Overview

@@ -22,8 +22,9 @@ def demo_comparison():
     
     # Define paths to our sample files
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    file_a = os.path.join(current_dir, "sample_a.py")
-    file_b = os.path.join(current_dir, "sample_c.py")
+    samples_dir = os.path.join(os.path.dirname(current_dir), "samples")
+    file_a = os.path.join(samples_dir, "sample_a.py")
+    file_b = os.path.join(samples_dir, "sample_c.py")
     
     print("=== CODE SIMILARITY ANALYZER DEMO ===")
     print(f"Comparing:\n  File A: {file_a}\n  File B: {file_b}\n")

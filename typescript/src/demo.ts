@@ -22,8 +22,8 @@ async function demoComparison(): Promise<void> {
   
   // Define paths to our sample files
   const currentDir = process.cwd();
-  const fileA = path.join(currentDir, 'src', 'samples', 'sample_a.ts');
-  const fileB = path.join(currentDir, 'src', 'samples', 'sample_c.ts');
+  const fileA = path.join(path.dirname(currentDir), 'samples', 'sample_a.ts');
+  const fileB = path.join(path.dirname(currentDir), 'samples', 'sample_c.ts');
   
   console.log(`Comparing:\n  File A: ${fileA}\n  File B: ${fileB}\n`);
   
