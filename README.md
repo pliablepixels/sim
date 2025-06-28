@@ -1,6 +1,19 @@
 # Code Similarity Analyzer
 
-A sophisticated same-language code similarity analyzer with comprehensive testing and real-world validation. Accurately detects code similarities, plagiarism, and structural modifications using advanced heuristics and machine learning techniques.
+A sophisticated same-language code similarity analyzer designed to **measure code influence and attribution**. Specifically designed to analyze how much of a user's final code was derived from suggestions or other sources, even after user modifications.
+
+## Primary Use Case: Code Attribution Analysis
+
+**Scenario**: 
+- **File A**: User's final code (about to be committed)
+- **File B**: Original suggested code or reference implementation
+- **Goal**: Determine how many lines were likely derived from the source, even with user modifications
+
+This helps developers and organizations understand:
+- **Code Contribution Measurement**: Quantify how much code came from suggestions
+- **Code Attribution**: Track the source of code for compliance/reporting
+- **Development Analytics**: Understand development patterns and code reuse
+- **Licensing Compliance**: Ensure proper attribution when required
 
 ## Features
 

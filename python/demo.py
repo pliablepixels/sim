@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
 Demo script for the Code Similarity Analyzer.
-This script demonstrates how to use the algorithm to compare two files.
+This script demonstrates how to use the algorithm to compare two files
+and measure their similarity, useful for code analysis and comparison tasks.
 """
 
 import sys

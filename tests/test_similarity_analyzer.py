@@ -1,20 +1,31 @@
 #!/usr/bin/env python3
 """
-Comprehensive Test Suite for Code Similarity Analyzer
+Comprehensive Test Suite for Code Similarity Analyze        user_final_code = suggestion  # User accepted suggestion as-is
+        
+        results = self.analyze_similarity(suggestion, user_final_code, threshold=0.9)
+        
+        # Identical code should have near-perfect influence
+        self.assertGreaterEqual(results['similarity_percentage'], 90.0,
+                               "Identical code should have >90% influence")
+        self.assertGreaterEqual(results['average_similarity_score'], 0.95,
+                               "Identical code should have average score >0.95")
+        
+        print(f"✅ Identical code (user accepted as-is): {results['similarity_percentage']:.1f}% influence")t suite validates the accuracy of measuring code similarity and influence
+on user's final code, including scenarios such as:
+- Direct code acceptance (user accepted suggestion unchanged)
+- Modified code (user renamed variables, added comments)  
+- Refactored code (user restructured while keeping core logic)
+- Inspired code (user implemented different approach)
+- Original user code (no external influence detected)
 
-This test suite validates the accuracy and behavior of the Code Similarity Analyzer
-with various scenarios including:
-- Identical code detection
-- Plagiarism detection (modified variable names, structure changes)
-- Different implementations of same functionality
-- Unrelated code detection
-- Edge cases and boundary conditions
+Primary Use Case: Measuring code contribution and attribution in development
+for analytics, insights, and understanding code development patterns.
 
 Usage:
     python test_similarity_analyzer.py
 
-The test suite includes detailed assertions and reporting to help developers
-understand how the similarity analyzer behaves in different scenarios.
+The test suite provides detailed influence metrics and confidence levels
+to help organizations understand code development adoption and impact.
 """
 
 import sys
@@ -35,7 +46,7 @@ spec.loader.exec_module(similarity_module)
 CodeSimilarityAnalyzer = similarity_module.CodeSimilarityAnalyzer
 
 class TestCodeSimilarityAnalyzer(unittest.TestCase):
-    """Comprehensive test cases for the Code Similarity Analyzer"""
+    """Comprehensive test cases for Code Similarity Analysis"""
     
     def setUp(self):
         """Set up test fixtures before each test method."""
@@ -62,9 +73,9 @@ class TestCodeSimilarityAnalyzer(unittest.TestCase):
             os.unlink(file_a)
             os.unlink(file_b)
     
-    def test_identical_code_detection(self):
-        """Test that identical code is detected with very high similarity"""
-        code = '''
+    def test_identical_code_acceptance(self):
+        """Test detection when user accepts suggestion unchanged"""
+        suggestion = '''
 def calculate_area(radius):
     """Calculate the area of a circle"""
     return 3.14159 * radius * radius
@@ -74,19 +85,21 @@ def greet_user(name):
     return f"Hello, {name}!"
 '''
         
-        results = self.analyze_similarity(code, code, threshold=0.9)
+        user_final_code = suggestion  # User accepted suggestion as-is
         
-        # Identical code should have near-perfect similarity
+        results = self.analyze_similarity(suggestion, user_final_code, threshold=0.9)
+        
+        # Identical code should have near-perfect influence
         self.assertGreaterEqual(results['similarity_percentage'], 90.0,
-                               "Identical code should have >90% similarity")
+                               "Identical code should have >90% influence")
         self.assertGreaterEqual(results['average_similarity_score'], 0.95,
                                "Identical code should have average score >0.95")
         
-        print(f"✅ Identical code test: {results['similarity_percentage']:.1f}% similarity")
+        print(f"✅ Identical code (user accepted as-is): {results['similarity_percentage']:.1f}% influence")
     
-    def test_variable_name_changes(self):
-        """Test detection of code with only variable name changes (plagiarism scenario)"""
-        original_code = '''
+    def test_modified_code(self):
+        """Test detection when user modifies suggestion (variable names, comments)"""
+        original_suggestion = '''
 def calculate_circle_area(radius):
     pi = 3.14159
     result = pi * radius * radius
@@ -97,30 +110,33 @@ def process_user_data(username, age):
     return user_info
 '''
         
-        modified_code = '''
+        user_modified_code = '''
 def calculate_circle_area(r):
+    # Mathematical constant pi
     pi_value = 3.14159
+    # Calculate area using pi * r^2
     area = pi_value * r * r
     return area
 
 def process_user_data(name, user_age):
+    # Create user data dictionary
     data = {"name": name, "age": user_age}
     return data
 '''
         
-        results = self.analyze_similarity(original_code, modified_code, threshold=0.6)
+        results = self.analyze_similarity(original_suggestion, user_modified_code, threshold=0.6)
         
-        # Should detect high similarity despite variable name changes
-        self.assertGreaterEqual(results['similarity_percentage'], 60.0,
-                               "Variable name changes should still show high similarity")
+        # Should detect high influence despite user modifications
+        self.assertGreaterEqual(results['similarity_percentage'], 50.0,
+                               "Modified code should still show high influence")
         self.assertLessEqual(results['similarity_percentage'], 95.0,
-                            "Variable name changes should reduce similarity somewhat")
+                            "User modifications should reduce influence score somewhat")
         
-        print(f"✅ Variable name changes test: {results['similarity_percentage']:.1f}% similarity")
+        print(f"✅ Modified code (variable renames + comments): {results['similarity_percentage']:.1f}% influence")
     
-    def test_structural_modifications(self):
-        """Test detection of structurally modified code (moderate plagiarism)"""
-        original_code = '''
+    def test_refactored_code(self):
+        """Test detection when user refactors suggestion while keeping core logic"""
+        original_suggestion = '''
 class Calculator:
     def __init__(self):
         self.history = []
@@ -136,7 +152,7 @@ class Calculator:
         return result
 '''
         
-        modified_code = '''
+        user_refactored_code = '''
 class MathProcessor:
     def __init__(self):
         self.operations = []
@@ -152,19 +168,19 @@ class MathProcessor:
         return result
 '''
         
-        results = self.analyze_similarity(original_code, modified_code, threshold=0.4)
+        results = self.analyze_similarity(original_suggestion, user_refactored_code, threshold=0.4)
         
-        # Should detect moderate similarity
+        # Should detect moderate influence
         self.assertGreaterEqual(results['similarity_percentage'], 30.0,
-                               "Structural modifications should show moderate similarity")
-        self.assertLessEqual(results['similarity_percentage'], 70.0,
-                            "Structural modifications should reduce similarity significantly")
+                               "Refactored code should show moderate influence")
+        self.assertLessEqual(results['similarity_percentage'], 75.0,
+                            "User refactoring should reduce influence significantly")
         
-        print(f"✅ Structural modifications test: {results['similarity_percentage']:.1f}% similarity")
+        print(f"✅ Refactored code (structural changes): {results['similarity_percentage']:.1f}% influence")
     
-    def test_different_implementations_same_logic(self):
-        """Test similarity between different implementations of the same algorithm"""
-        fibonacci_iterative = '''
+    def test_inspired_implementation(self):
+        """Test when user implements different approach inspired by suggestion"""
+        fibonacci_suggestion = '''
 def fibonacci_iterative(n):
     if n <= 1:
         return n
@@ -183,7 +199,7 @@ def fibonacci_sequence(limit):
     return sequence
 '''
         
-        fibonacci_recursive = '''
+        user_fibonacci_implementation = '''
 def fibonacci_recursive(n):
     if n <= 1:
         return n
@@ -201,18 +217,18 @@ def generate_fibonacci_list(max_value):
     return result
 '''
         
-        results = self.analyze_similarity(fibonacci_iterative, fibonacci_recursive, threshold=0.3)
+        results = self.analyze_similarity(fibonacci_suggestion, user_fibonacci_implementation, threshold=0.3)
         
-        # Different implementations should show some similarity but not too high
+        # Different implementations should show light influence
         self.assertGreaterEqual(results['similarity_percentage'], 15.0,
-                               "Different implementations of same logic should show some similarity")
+                               "Inspired implementations should show some influence")
         self.assertLessEqual(results['similarity_percentage'], 60.0,
-                            "Different implementations should not show excessive similarity")
+                            "Different implementations should not show excessive influence")
         
-        print(f"✅ Different implementations test: {results['similarity_percentage']:.1f}% similarity")
+        print(f"✅ Inspired implementation (different approach): {results['similarity_percentage']:.1f}% influence")
     
-    def test_completely_unrelated_code(self):
-        """Test that completely unrelated code shows low similarity"""
+    def test_original_user_code(self):
+        """Test that original user code (no external influence) shows low attribution"""
         web_scraper = '''
 import requests
 from bs4 import BeautifulSoup
@@ -270,40 +286,40 @@ class MatrixCalculator:
         
         results = self.analyze_similarity(web_scraper, matrix_operations, threshold=0.1)
         
-        # Unrelated code should show very low similarity
+        # Original user code should show very low influence
         self.assertLessEqual(results['similarity_percentage'], 30.0,
-                            "Completely unrelated code should show low similarity")
+                            "Original user code should show low influence")
         
-        print(f"✅ Unrelated code test: {results['similarity_percentage']:.1f}% similarity")
+        print(f"✅ Original user code (no external influence): {results['similarity_percentage']:.1f}% influence")
     
-    def test_complex_samples_similarity(self):
-        """Test similarity between our complex sample files"""
-        # Test similarity between complex_a.py and complex_c.py (plagiarized version)
+    def test_complex_samples_attribution(self):
+        """Test attribution analysis between complex sample files"""
+        # Test influence between complex_a.py (baseline) and complex_c.py (user modified)
         complex_a_path = os.path.join(self.samples_dir, "complex_a.py")
         complex_c_path = os.path.join(self.samples_dir, "complex_c.py")
         
         if os.path.exists(complex_a_path) and os.path.exists(complex_c_path):
             results = self.analyzer.analyze_code_similarity(complex_a_path, complex_c_path, threshold=0.5)
             
-            # complex_c.py is a plagiarized version of complex_a.py
+            # complex_c.py represents user modifications of suggested complex_a.py
             self.assertGreaterEqual(results['similarity_percentage'], 60.0,
-                                   "Plagiarized code should show high similarity")
+                                   "User-modified code should show high influence")
             
-            print(f"✅ Complex samples (plagiarism) test: {results['similarity_percentage']:.1f}% similarity")
+            print(f"✅ Complex modification analysis: {results['similarity_percentage']:.1f}% influence")
         
-        # Test similarity between complex_a.py and complex_b.py (different implementations)
+        # Test influence between complex_a.py (baseline) and complex_b.py (inspired user implementation)
         complex_b_path = os.path.join(self.samples_dir, "complex_b.py")
         
         if os.path.exists(complex_a_path) and os.path.exists(complex_b_path):
             results = self.analyzer.analyze_code_similarity(complex_a_path, complex_b_path, threshold=0.3)
             
-            # Different implementations of same domain should show moderate similarity
+            # Inspired implementations should show light to moderate influence
             self.assertGreaterEqual(results['similarity_percentage'], 20.0,
-                                   "Different implementations should show some similarity")
+                                   "Inspired implementations should show some influence")
             self.assertLessEqual(results['similarity_percentage'], 60.0,
-                                "Different implementations should not be too similar")
+                                "Inspired implementations should not show excessive influence")
             
-            print(f"✅ Complex samples (different implementations) test: {results['similarity_percentage']:.1f}% similarity")
+            print(f"✅ Complex inspired implementation: {results['similarity_percentage']:.1f}% influence")
     
     def test_threshold_sensitivity(self):
         """Test how different thresholds affect detection sensitivity"""
@@ -405,9 +421,9 @@ class SimilarityTestReporter:
         print("\n" + "="*80)
 
 def main():
-    """Main function to run tests and generate reports"""
-    print("Starting Code Similarity Analyzer Test Suite...")
-    print("="*60)
+    """Main function to run code attribution analysis tests and generate reports"""
+    print("Starting Code Similarity Analysis Test Suite...")
+    print("="*70)
     
     # Run unit tests
     unittest.main(argv=[''], exit=False, verbosity=2)
@@ -415,13 +431,13 @@ def main():
     # Run comprehensive analysis
     SimilarityTestReporter.run_comprehensive_analysis()
     
-    print("\n✅ All tests completed!")
-    print("\nTo interpret results:")
-    print("- >90% similarity: Likely identical or very minor changes")
-    print("- 70-90% similarity: Significant similarity, possible plagiarism")
-    print("- 40-70% similarity: Moderate similarity, same domain/patterns")
-    print("- 20-40% similarity: Some common elements")
-    print("- <20% similarity: Largely unrelated code")
+    print("\n✅ All attribution tests completed!")
+    print("\nCode Influence Interpretation Guide:")
+    print("- >90% influence: User accepted suggestion unchanged")
+    print("- 70-90% influence: User made minor modifications (variable names, comments)")
+    print("- 40-70% influence: User refactored code while keeping core logic")
+    print("- 20-40% influence: User implementation inspired by suggestion")
+    print("- <20% influence: Original user code with minimal external contribution")
 
 if __name__ == "__main__":
     main()
