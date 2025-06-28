@@ -10,7 +10,8 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 # Import our custom module (avoiding 'try' keyword issue)
 import importlib.util
-spec = importlib.util.spec_from_file_location("similarity_analyzer", "try.py")
+import os
+spec = importlib.util.spec_from_file_location("similarity_analyzer", os.path.join(os.path.dirname(__file__), "try.py"))
 similarity_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(similarity_module)
 CodeSimilarityAnalyzer = similarity_module.CodeSimilarityAnalyzer

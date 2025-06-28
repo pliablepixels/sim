@@ -17,23 +17,22 @@ interface AnalysisResults {
     error?: string;
 }
 export declare class CodeSimilarityAnalyzer {
-    private readonly commonKeywords;
+    private readonly structuralKeywords;
     private readonly operators;
-    private readonly commentPatterns;
     /**
-     * Normalize a line of code by removing comments, extra whitespace, and standardizing format
+     * Normalize a line of code for same-language comparison
      */
     private normalizeLine;
     /**
-     * Extract structural features from a line of code
+     * Extract key structural features from a line of code for same-language comparison
      */
     private extractStructuralFeatures;
     /**
-     * Tokenize a line into meaningful tokens
+     * Tokenize a line into meaningful code tokens
      */
     private tokenizeLine;
     /**
-     * Calculate similarity between two lines using multiple metrics
+     * Calculate similarity between two lines of the same programming language
      */
     private calculateLineSimilarity;
     /**

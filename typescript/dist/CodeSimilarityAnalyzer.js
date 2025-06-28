@@ -37,36 +37,23 @@ exports.CodeSimilarityAnalyzer = void 0;
 const fs = __importStar(require("fs"));
 class CodeSimilarityAnalyzer {
     constructor() {
-        this.commonKeywords = new Set([
-            'if', 'else', 'elif', 'for', 'while', 'do', 'switch', 'case', 'default',
-            'function', 'def', 'class', 'struct', 'interface', 'extends', 'implements',
-            'import', 'include', 'require', 'from', 'as', 'namespace', 'using',
-            'public', 'private', 'protected', 'static', 'final', 'const', 'let', 'var',
-            'return', 'yield', 'break', 'continue', 'pass', 'throw', 'try', 'catch',
-            'finally', 'except', 'with', 'lambda', 'async', 'await', 'new', 'delete'
+        this.structuralKeywords = new Set([
+            'if', 'else', 'elif', 'for', 'while', 'do', 'switch', 'case',
+            'function', 'def', 'class', 'return', 'break', 'continue',
+            'try', 'catch', 'finally', 'throw', 'import', 'from'
         ]);
         this.operators = new Set([
             '+', '-', '*', '/', '%', '=', '==', '!=', '<', '>', '<=', '>=',
-            '&&', '||', '!', '&', '|', '^', '<<', '>>', '++', '--'
+            '&&', '||', '!', '&', '|', '^', '++', '--'
         ]);
-        this.commentPatterns = [
-            /\/\/.*$/gm, // C-style single line
-            /#.*$/gm, // Python/Shell style
-            /\/\*.*?\*\//gm, // C-style multiline
-            /<!--.*?-->/gm, // HTML/XML
-            /--.*$/gm, // SQL style
-            /;.*$/gm, // Assembly/Lisp style
-        ];
     }
     /**
-     * Normalize a line of code by removing comments, extra whitespace, and standardizing format
+     * Normalize a line of code for same-language comparison
      */
     normalizeLine(line) {
         let normalized = line;
-        // Remove comments
-        for (const pattern of this.commentPatterns) {
-            normalized = normalized.replace(pattern, '');
-        }
+        // Remove common comment patterns
+        normalized = normalized.replace(/\/\/.*$|#.*$|\/\*.*?\*\/|<!--.*?-->/g, '');
         // Normalize whitespace
         normalized = normalized.replace(/\s+/g, ' ').trim();
         // Convert to lowercase for comparison
@@ -74,32 +61,32 @@ class CodeSimilarityAnalyzer {
         return normalized;
     }
     /**
-     * Extract structural features from a line of code
+     * Extract key structural features from a line of code for same-language comparison
      */
     extractStructuralFeatures(line) {
         const features = new Set();
         const normalized = this.normalizeLine(line);
-        // Check for keywords
+        // Extract keywords that indicate code structure
         const words = normalized.match(/\b\w+\b/g) || [];
         for (const word of words) {
-            if (this.commonKeywords.has(word)) {
+            if (this.structuralKeywords.has(word)) {
                 features.add(`keyword:${word}`);
             }
         }
-        // Check for operators
+        // Extract operators
         for (const op of this.operators) {
             if (normalized.includes(op)) {
                 features.add(`operator:${op}`);
             }
         }
-        // Check for common patterns
+        // Extract specific patterns for same-language detection
         const patterns = {
-            function_call: /\b\w+\s*\(/,
+            function_call: /\b\w+\s*\(.*?\)/,
             assignment: /\b\w+\s*=/,
-            array_access: /\[\s*\w*\s*\]/,
-            block_or_dict: /\{\s*\w*\s*\}/,
-            string_literal: /"\s*.*?\s*"|'\s*.*?\s*'/,
-            numeric_literal: /\b\d+\b/,
+            indexing: /\[.*?\]/,
+            block_or_object: /\{.*?\}/,
+            string_literal: /"[^"]*"|'[^']*'/,
+            numeric_literal: /\b\d+(\.\d+)?\b/,
         };
         for (const [feature, pattern] of Object.entries(patterns)) {
             if (pattern.test(normalized)) {
@@ -109,15 +96,16 @@ class CodeSimilarityAnalyzer {
         return features;
     }
     /**
-     * Tokenize a line into meaningful tokens
+     * Tokenize a line into meaningful code tokens
      */
     tokenizeLine(line) {
         const normalized = this.normalizeLine(line);
-        // Split on common delimiters but preserve them
+        // Extract meaningful tokens (identifiers, operators, literals)
         const tokens = normalized.match(/\w+|[^\w\s]/g) || [];
-        // Filter out empty tokens and single characters that aren't operators
+        // Filter meaningful tokens
         const filteredTokens = [];
         for (const token of tokens) {
+            // Keep multi-character tokens, important operators, and numbers
             if (token.length > 1 || this.operators.has(token) || /\d/.test(token)) {
                 filteredTokens.push(token);
             }
@@ -125,7 +113,7 @@ class CodeSimilarityAnalyzer {
         return filteredTokens;
     }
     /**
-     * Calculate similarity between two lines using multiple metrics
+     * Calculate similarity between two lines of the same programming language
      */
     calculateLineSimilarity(lineA, lineB) {
         if (!lineA.trim() || !lineB.trim()) {
