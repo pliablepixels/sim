@@ -299,14 +299,18 @@ class CodeSimilarityAnalyzer:
         if not lines_a or not lines_b:
             return {
                 'error': 'One or both inputs could not be read or contain no meaningful code',
-                'lines_a_count': len(lines_a) if lines_a else 0,
-                'lines_b_count': len(lines_b) if lines_b else 0,
-                'similarity_percentage': 0.0,  # Include this for consistency
-                'similar_matches': [],
                 'input_a': source_a,
                 'input_b': source_b,
+                'is_file': is_file,
+                'lines_a_count': len(lines_a) if lines_a else 0,
+                'lines_b_count': len(lines_b) if lines_b else 0,
+                'similar_lines_count': 0,  # Add missing key
+                'similarity_percentage': 0.0,
+                'average_similarity_score': 0.0,  # Add missing key
                 'similarity_threshold': similarity_threshold,
-                'is_file': is_file
+                'similar_matches': [],
+                'similarity_distribution': {},  # Add missing key
+                'interpretation': 'Very Low Similarity - Largely different code'  # Add missing key
             }
         
         # Find similar lines
