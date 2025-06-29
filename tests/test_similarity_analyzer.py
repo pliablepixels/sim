@@ -38,13 +38,12 @@ import tempfile
 # Add the parent directory to the path to import our analyzer
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Import our analyzer (handling the 'try' keyword issue)
-import importlib.util
-spec = importlib.util.spec_from_file_location("similarity_analyzer", 
-                                             os.path.join(os.path.dirname(__file__), "..", "python", "try.py"))
-similarity_module = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(similarity_module)
-CodeSimilarityAnalyzer = similarity_module.CodeSimilarityAnalyzer
+# Add the parent directory to the path to import our analyzer
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "python"))
+
+# Import our analyzer with the new proper name
+from python.code_similarity_analyzer import CodeSimilarityAnalyzer
 
 class TestCodeSimilarityAnalyzer(unittest.TestCase):
     """Comprehensive test cases for Code Similarity Analysis"""

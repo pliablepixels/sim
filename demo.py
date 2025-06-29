@@ -1,21 +1,15 @@
 #!/usr/bin/env python3
 """
 Demo script for the Code Similarity Analyzer.
-This script demonstrates how to use the algorithm to compare two files
-and measure their similarity, useful for code analysis and comparison tasks.
+This script demonstrates how to use the algorithm to compare two files.
 """
 
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-# Import our custom module (avoiding 'try' keyword issue)
-import importlib.util
-import os
-spec = importlib.util.spec_from_file_location("similarity_analyzer", os.path.join(os.path.dirname(__file__), "code_similarity_analyzer.py"))
-similarity_module = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(similarity_module)
-CodeSimilarityAnalyzer = similarity_module.CodeSimilarityAnalyzer
+# Import the code similarity analyzer
+from python.code_similarity_analyzer import CodeSimilarityAnalyzer
 import os
 
 def demo_comparison():
@@ -24,9 +18,8 @@ def demo_comparison():
     
     # Define paths to our sample files
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    samples_dir = os.path.join(os.path.dirname(current_dir), "samples")
-    file_a = os.path.join(samples_dir, "sample_a.py")
-    file_b = os.path.join(samples_dir, "sample_c.py")
+    file_a = os.path.join(current_dir, "sample_a.py")
+    file_b = os.path.join(current_dir, "sample_c.py")
     
     print("=== CODE SIMILARITY ANALYZER DEMO ===")
     print(f"Comparing:\n  File A: {file_a}\n  File B: {file_b}\n")

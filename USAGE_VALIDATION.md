@@ -62,7 +62,7 @@ cd python && python demo.py
 python tests/test_similarity_analyzer.py
 
 # Basic usage
-from try import CodeSimilarityAnalyzer
+from python.code_similarity_analyzer import CodeSimilarityAnalyzer
 analyzer = CodeSimilarityAnalyzer()
 results = analyzer.analyze_code_similarity('file1.py', 'file2.py', 0.7)
 ```

@@ -9,17 +9,14 @@ import os
 import tempfile
 import subprocess
 import json
-sys.path.append(os.path.join(os.path.dirname(__file__), 'python'))
 
-import importlib.util
-spec = importlib.util.spec_from_file_location("analyzer_module", os.path.join(os.path.dirname(__file__), 'python', 'try.py'))
-analyzer_module = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(analyzer_module)
+# Simple import from the python directory
+from python.code_similarity_analyzer import CodeSimilarityAnalyzer
 
 def test_both_implementations():
     """Compare Python and TypeScript implementations on identical test cases"""
     
-    analyzer = analyzer_module.CodeSimilarityAnalyzer()
+    analyzer = CodeSimilarityAnalyzer()
     
     print("=== FINAL IMPLEMENTATION COMPARISON ===")
     print("=" * 60)

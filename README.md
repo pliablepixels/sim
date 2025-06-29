@@ -53,7 +53,7 @@ This helps developers and organizations understand:
 │   └── README.md               # Testing documentation
 ├── python/                      # Python implementation
 │   ├── demo.py                 # Interactive demo script
-│   └── try.py                  # Main analyzer class
+│   └── code_similarity_analyzer.py  # Main analyzer class
 └── typescript/                  # TypeScript implementation
     ├── package.json            # NPM configuration
     ├── tsconfig.json           # TypeScript configuration
@@ -110,7 +110,7 @@ python demo.py
 
 #### Basic Usage
 ```python
-from try import CodeSimilarityAnalyzer
+from python.code_similarity_analyzer import CodeSimilarityAnalyzer
 
 analyzer = CodeSimilarityAnalyzer()
 results = analyzer.analyze_code_similarity('file_a.py', 'file_b.js', threshold=0.7)
