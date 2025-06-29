@@ -60,7 +60,8 @@ class TypeScriptSimilarityTester {
     constructor() {
         this.testResults = [];
         this.analyzer = new CodeSimilarityAnalyzer_1.CodeSimilarityAnalyzer();
-        this.samplesDir = path.join(__dirname);
+        // Point to the samples directory (go up from typescript/src or typescript/dist to project root, then to samples)
+        this.samplesDir = path.join(__dirname, '..', '..', 'samples');
     }
     createTempFile(content) {
         const tempPath = path.join(os.tmpdir(), `test_${Date.now()}_${Math.random().toString(36).substr(2, 9)}.ts`);
@@ -119,7 +120,7 @@ class UserManager {
     }
 }`;
         const results = this.analyzeSimilarity(code, code, 0.9);
-        this.assert(results.similarityPercentage >= 90.0, `Identical code similarity: ${results.similarityPercentage.toFixed(1)}%`, "Identical Code Detection");
+        this.assert(results.similarityPercentage >= 90.0, `Identical code similarity: ${results.similarityPercentage.toFixed(1)}% (${results.similarLinesCount} of ${results.linesACount} lines matched)`, "Identical Code Detection");
     }
     testVariableNameChanges() {
         const originalCode = `
@@ -171,7 +172,7 @@ function createNewUser(userId: string, userEmail: string, userPassword: string):
     // Simulation
 }`;
         const results = this.analyzeSimilarity(originalCode, modifiedCode, 0.6);
-        this.assert(results.similarityPercentage >= 60.0 && results.similarityPercentage <= 95.0, `Variable name changes similarity: ${results.similarityPercentage.toFixed(1)}%`, "Variable Name Changes Detection");
+        this.assert(results.similarityPercentage >= 60.0 && results.similarityPercentage <= 95.0, `Variable name changes similarity: ${results.similarityPercentage.toFixed(1)}% (${results.similarLinesCount} of ${results.linesACount} lines matched)`, "Variable Name Changes Detection");
     }
     testStructuralModifications() {
         const originalCode = `
@@ -223,7 +224,7 @@ class NumberAnalyzer {
     }
 }`;
         const results = this.analyzeSimilarity(originalCode, modifiedCode, 0.4);
-        this.assert(results.similarityPercentage >= 30.0 && results.similarityPercentage <= 70.0, `Structural modifications similarity: ${results.similarityPercentage.toFixed(1)}%`, "Structural Modifications Detection");
+        this.assert(results.similarityPercentage >= 30.0 && results.similarityPercentage <= 70.0, `Structural modifications similarity: ${results.similarityPercentage.toFixed(1)}% (${results.similarLinesCount} of ${results.linesACount} lines matched)`, "Structural Modifications Detection");
     }
     testDifferentImplementationsSameLogic() {
         const binarySearchIterative = `
@@ -270,7 +271,7 @@ function arrangeNumbers(data: number[]): number[] {
     return data.slice().sort((x, y) => x - y);
 }`;
         const results = this.analyzeSimilarity(binarySearchIterative, binarySearchRecursive, 0.3);
-        this.assert(results.similarityPercentage >= 15.0 && results.similarityPercentage <= 60.0, `Different implementations similarity: ${results.similarityPercentage.toFixed(1)}%`, "Different Implementations Same Logic");
+        this.assert(results.similarityPercentage >= 15.0 && results.similarityPercentage <= 60.0, `Different implementations similarity: ${results.similarityPercentage.toFixed(1)}% (${results.similarLinesCount} of ${results.linesACount} lines matched)`, "Different Implementations Same Logic");
     }
     testCompletelyUnrelatedCode() {
         const apiClient = `
@@ -364,14 +365,14 @@ class GeometryCalculator {
     }
 }`;
         const results = this.analyzeSimilarity(apiClient, geometryCalculations, 0.1);
-        this.assert(results.similarityPercentage <= 30.0, `Unrelated code similarity: ${results.similarityPercentage.toFixed(1)}%`, "Completely Unrelated Code");
+        this.assert(results.similarityPercentage <= 30.0, `Unrelated code similarity: ${results.similarityPercentage.toFixed(1)}% (${results.similarLinesCount} of ${results.linesACount} lines matched)`, "Completely Unrelated Code");
     }
     testComplexSamplesSimilarity() {
         const complexAPath = path.join(this.samplesDir, "complex_a.ts");
         const complexBPath = path.join(this.samplesDir, "complex_b.ts");
         if (fs.existsSync(complexAPath) && fs.existsSync(complexBPath)) {
             const results = this.analyzer.analyzeCodeSimilarity(complexAPath, complexBPath, 0.3);
-            this.assert(results.similarityPercentage >= 20.0 && results.similarityPercentage <= 60.0, `Complex samples similarity: ${results.similarityPercentage.toFixed(1)}%`, "Complex Samples Different Implementations");
+            this.assert(results.similarityPercentage >= 20.0 && results.similarityPercentage <= 60.0, `Complex samples similarity: ${results.similarityPercentage.toFixed(1)}% (${results.similarLinesCount} of ${results.linesACount} lines matched)`, "Complex Samples Different Implementations");
         }
     }
     testThresholdSensitivity() {
@@ -409,7 +410,7 @@ function checkInput(input: any): boolean {
         for (const threshold of thresholds) {
             const results = this.analyzeSimilarity(codeA, codeB, threshold);
             resultsByThreshold[threshold] = results;
-            console.log(`  Threshold ${threshold}: ${results.similarityPercentage.toFixed(1)}% similarity, ${results.similarMatches.length} matches`);
+            console.log(`  Threshold ${threshold}: ${results.similarityPercentage.toFixed(1)}% similarity, ${results.similarMatches.length} matches (${results.similarLinesCount} similar lines)`);
         }
         // Verify that higher thresholds generally result in fewer matches
         let thresholdTestPassed = true;
@@ -431,13 +432,13 @@ function checkInput(input: any): boolean {
         this.assert(emptyResults.similarityPercentage === 0.0, "Empty files have 0% similarity", "Edge Case: Empty Files");
         // Single line files
         const singleLineResults = this.analyzeSimilarity("console.log('hello');", "console.log('hello');", 0.5);
-        this.assert(singleLineResults.similarityPercentage >= 90.0, `Identical single lines: ${singleLineResults.similarityPercentage.toFixed(1)}% similarity`, "Edge Case: Single Line Files");
+        this.assert(singleLineResults.similarityPercentage >= 90.0, `Identical single lines: ${singleLineResults.similarityPercentage.toFixed(1)}% similarity (${singleLineResults.similarLinesCount} of ${singleLineResults.linesACount} lines matched)`, "Edge Case: Single Line Files");
         // Files with only comments
         const commentsA = "// This is a comment\n// Another comment";
         const commentsB = "// Different comment\n// Yet another comment";
         const commentResults = this.analyzeSimilarity(commentsA, commentsB, 0.5);
         this.assert(true, // Comments are removed during preprocessing
-        `Comment-only files: ${commentResults.similarityPercentage.toFixed(1)}% similarity`, "Edge Case: Comment-Only Files");
+        `Comment-only files: ${commentResults.similarityPercentage.toFixed(1)}% similarity (${commentResults.similarLinesCount} of ${commentResults.linesACount} lines matched)`, "Edge Case: Comment-Only Files");
     }
     runAllTests() {
         console.log("Starting TypeScript Code Similarity Analyzer Test Suite...");
@@ -448,6 +449,7 @@ function checkInput(input: any): boolean {
         this.testDifferentImplementationsSameLogic();
         this.testCompletelyUnrelatedCode();
         this.testComplexSamplesSimilarity();
+        this.testPercentageAndCountReporting();
         this.testThresholdSensitivity();
         this.testEdgeCases();
         this.generateTestReport();
@@ -477,6 +479,71 @@ function checkInput(input: any): boolean {
         console.log("- 20-40% similarity: Some common elements");
         console.log("- <20% similarity: Largely unrelated code");
         console.log("=".repeat(70));
+    }
+    testPercentageAndCountReporting() {
+        const codeA = `
+interface Product {
+    id: number;
+    name: string;
+    price: number;
+}
+
+class ProductManager {
+    private products: Product[] = [];
+
+    addProduct(product: Product): void {
+        this.products.push(product);
+    }
+
+    findProductById(id: number): Product | undefined {
+        return this.products.find(p => p.id === id);
+    }
+
+    getAllProducts(): Product[] {
+        return [...this.products];
+    }
+}`;
+        const codeB = `
+interface Item {
+    id: number;
+    title: string;
+    cost: number;
+}
+
+class ItemManager {
+    private items: Item[] = [];
+
+    addItem(item: Item): void {
+        this.items.push(item);
+    }
+
+    findItemById(id: number): Item | undefined {
+        return this.items.find(i => i.id === id);
+    }
+
+    getAllItems(): Item[] {
+        return [...this.items];
+    }
+}`;
+        const results = this.analyzeSimilarity(codeA, codeB, 0.6);
+        // Verify both percentage and count are present in results
+        const hasPercentage = 'similarityPercentage' in results;
+        const hasCount = 'similarLinesCount' in results;
+        const hasLinesACount = 'linesACount' in results;
+        const hasLinesBCount = 'linesBCount' in results;
+        this.assert(hasPercentage && hasCount && hasLinesACount && hasLinesBCount, "Results should include both percentage and count metrics", "Percentage and Count Reporting - Fields Present");
+        // Verify data types and ranges
+        const percentage = results.similarityPercentage;
+        const count = results.similarLinesCount;
+        const totalA = results.linesACount;
+        const totalB = results.linesBCount;
+        const validTypes = typeof percentage === 'number' &&
+            typeof count === 'number' &&
+            typeof totalA === 'number' &&
+            typeof totalB === 'number';
+        const validRanges = percentage >= 0 && percentage <= 100 &&
+            count >= 0 && count <= Math.min(totalA, totalB);
+        this.assert(validTypes && validRanges, `Percentage and count metrics are valid: ${percentage.toFixed(1)}% similarity (${count} of ${totalA} lines matched)`, "Percentage and Count Reporting - Valid Values");
     }
 }
 exports.TypeScriptSimilarityTester = TypeScriptSimilarityTester;

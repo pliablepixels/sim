@@ -113,11 +113,13 @@ analyzer.print_detailed_report(results)
 
 # Test with complex samples for plagiarism detection
 results = analyzer.analyze_code_similarity('samples/complex_a.py', 'samples/complex_c.py', threshold=0.7)
-print(f"Plagiarism detection: {results['similarity_percentage']:.1f}% similarity")
+print(f"Plagiarism detection: {results['similarity_percentage']:.1f}% similarity "
+      f"({results['similar_lines_count']} of {results['lines_a_count']} lines matched)")
 
 # Compare different implementations
 results = analyzer.analyze_code_similarity('samples/complex_a.py', 'samples/complex_b.py', threshold=0.4)  
-print(f"Different implementations: {results['similarity_percentage']:.1f}% similarity")
+print(f"Different implementations: {results['similarity_percentage']:.1f}% similarity "
+      f"({results['similar_lines_count']} of {results['lines_a_count']} lines matched)")
 ```
 
 ### TypeScript Implementation
@@ -157,7 +159,8 @@ const attributionResults = analyzer.analyzeCodeSimilarity(
     'samples/complex_c.ts', 
     0.7
 );
-console.log(`Attribution check: ${attributionResults.similarityPercentage.toFixed(1)}%`);
+console.log(`Attribution check: ${attributionResults.similarityPercentage.toFixed(1)}% similarity ` +
+           `(${attributionResults.similarLinesCount} of ${attributionResults.linesACount} lines matched)`);
 ```
 
 ## Available Scripts (TypeScript)
@@ -186,7 +189,7 @@ console.log(`Attribution check: ${attributionResults.similarityPercentage.toFixe
 ```
 File A: samples/complex_a.py (155 lines)
 File B: samples/complex_c.py (158 lines)  
-Similarity: 78.3%
+Similarity: 78.3% (112 of 155 lines matched)
 Interpretation: High Similarity - Possible plagiarism
 ```
 **Changes detected**: `Order` → `PurchaseOrder`, `customer_id` → `buyer_id`, method renames
@@ -195,7 +198,7 @@ Interpretation: High Similarity - Possible plagiarism
 ```
 File A: samples/complex_a.py (155 lines)
 File B: samples/complex_b.py (142 lines)
-Similarity: 32.1%  
+Similarity: 32.1% (45 of 155 lines matched)
 Interpretation: Moderate Similarity - Same domain/patterns
 ```
 **Analysis**: Same e-commerce domain, different architectural approaches

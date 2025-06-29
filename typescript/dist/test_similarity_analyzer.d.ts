@@ -33,6 +33,7 @@ export declare class TypeScriptSimilarityTester {
     testEdgeCases(): void;
     runAllTests(): void;
     private generateTestReport;
+    testPercentageAndCountReporting(): void;
 }
 export declare function runTypeScriptTests(): void;
 //# sourceMappingURL=test_similarity_analyzer.d.ts.map
