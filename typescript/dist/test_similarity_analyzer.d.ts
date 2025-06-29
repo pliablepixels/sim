@@ -31,6 +31,14 @@ export declare class TypeScriptSimilarityTester {
     testComplexSamplesSimilarity(): void;
     testThresholdSensitivity(): void;
     testEdgeCases(): void;
+    /**
+     * Test analyzing code fragments instead of files
+     */
+    private testCodeFragmentAnalysis;
+    /**
+     * Test build validation - simple smoke test that TypeScript compilation works
+     */
+    private testBuildValidation;
     runAllTests(): void;
     private generateTestReport;
     testPercentageAndCountReporting(): void;

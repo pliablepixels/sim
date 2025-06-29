@@ -4,8 +4,9 @@ interface SimilarMatch {
     score: number;
 }
 interface AnalysisResults {
-    fileA: string;
-    fileB: string;
+    inputA: string;
+    inputB: string;
+    isFile: boolean;
     linesACount: number;
     linesBCount: number;
     similarLinesCount: number;
@@ -55,6 +56,10 @@ export declare class CodeSimilarityAnalyzer {
      */
     private isTrivialLine;
     /**
+     * Process a code fragment string into meaningful lines
+     */
+    private preprocessCodeFragment;
+    /**
      * Read and preprocess a file, extracting meaningful code lines
      */
     private preprocessFile;
@@ -67,9 +72,9 @@ export declare class CodeSimilarityAnalyzer {
      */
     private interpretSimilarity;
     /**
-     * Analyze similarity between two code files (exact Python mirror)
+     * Analyze similarity between two code inputs (files or code fragments)
      */
-    analyzeCodeSimilarity(fileA: string, fileB: string, similarityThreshold?: number): AnalysisResults;
+    analyzeCodeSimilarity(inputA: string, inputB: string, similarityThreshold?: number, isFile?: boolean): AnalysisResults;
     /**
      * Print a focused similarity analysis report
      */

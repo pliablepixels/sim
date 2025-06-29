@@ -188,6 +188,24 @@ class CodeSimilarityAnalyzer:
         
         return meaningful_lines
     
+    def preprocess_code_fragment(self, code: str) -> List[str]:
+        """Process a code fragment string into meaningful lines."""
+        if not code:
+            return []
+        
+        # Split into lines
+        lines = code.split('\n')
+        
+        # Filter for meaningful code lines
+        meaningful_lines = []
+        for line in lines:
+            normalized = self.normalize_line(line)
+            # Keep lines that have substantial content
+            if normalized and len(normalized) > 3 and not self._is_trivial_line(normalized):
+                meaningful_lines.append(line.rstrip())
+        
+        return meaningful_lines
+
     def _is_trivial_line(self, normalized_line: str) -> bool:
         """Check if a line is too trivial to be meaningful for comparison."""
         trivial_patterns = {
@@ -248,36 +266,47 @@ class CodeSimilarityAnalyzer:
         
         return similar_matches
     
-    def analyze_code_similarity(self, file_a: str, file_b: str, 
-                               similarity_threshold: float = 0.7) -> Dict:
+    def analyze_code_similarity(self, input_a: str, input_b: str, 
+                               similarity_threshold: float = 0.7, 
+                               is_file: bool = True) -> Dict:
         """
-        Analyze similarity between two code files.
+        Analyze similarity between two code inputs (files or code fragments).
         
         Args:
-            file_a: Path to first file
-            file_b: Path to second file
+            input_a: Path to first file or first code fragment
+            input_b: Path to second file or second code fragment
             similarity_threshold: Minimum similarity score to consider lines similar
+            is_file: If True, inputs are file paths; if False, inputs are code fragments
             
         Returns:
             Dictionary with analysis results
         """
-        print(f"Analyzing similarity between {file_a} and {file_b}")
-        print(f"Similarity threshold: {similarity_threshold}")
+        if is_file:
+            print(f"Analyzing similarity between files {input_a} and {input_b}")
+            source_a, source_b = input_a, input_b
+            # Read and preprocess files
+            lines_a = self.preprocess_file(input_a)
+            lines_b = self.preprocess_file(input_b)
+        else:
+            print(f"Analyzing similarity between code fragments")
+            source_a, source_b = "Code Fragment A", "Code Fragment B"
+            # Process code fragments directly
+            lines_a = self.preprocess_code_fragment(input_a)
+            lines_b = self.preprocess_code_fragment(input_b)
         
-        # Read and preprocess files
-        lines_a = self.preprocess_file(file_a)
-        lines_b = self.preprocess_file(file_b)
+        print(f"Similarity threshold: {similarity_threshold}")
         
         if not lines_a or not lines_b:
             return {
-                'error': 'One or both files could not be read or contain no meaningful code',
+                'error': 'One or both inputs could not be read or contain no meaningful code',
                 'lines_a_count': len(lines_a) if lines_a else 0,
                 'lines_b_count': len(lines_b) if lines_b else 0,
                 'similarity_percentage': 0.0,  # Include this for consistency
                 'similar_matches': [],
-                'file_a': file_a,
-                'file_b': file_b,
-                'similarity_threshold': similarity_threshold
+                'input_a': source_a,
+                'input_b': source_b,
+                'similarity_threshold': similarity_threshold,
+                'is_file': is_file
             }
         
         # Find similar lines
@@ -335,8 +364,9 @@ class CodeSimilarityAnalyzer:
         )
         
         results = {
-            'file_a': file_a,
-            'file_b': file_b,
+            'input_a': source_a,
+            'input_b': source_b,
+            'is_file': is_file,
             'lines_a_count': total_lines_a,
             'lines_b_count': total_lines_b,
             'similar_lines_count': similar_lines_count,
@@ -370,10 +400,12 @@ class CodeSimilarityAnalyzer:
             return
         
         print("=" * 80)
-        print("SAME-LANGUAGE CODE SIMILARITY ANALYSIS")
+        print("CODE SIMILARITY ANALYSIS")
         print("=" * 80)
-        print(f"File A: {results['file_a']}")
-        print(f"File B: {results['file_b']}")
+        input_type = "Files" if results.get('is_file', True) else "Code Fragments"
+        print(f"Input Type: {input_type}")
+        print(f"Input A: {results['input_a']}")
+        print(f"Input B: {results['input_b']}")
         print(f"Threshold: {results['similarity_threshold']}")
         print("-" * 80)
         print(f"Meaningful Lines A: {results['lines_a_count']}")
@@ -397,17 +429,50 @@ def main():
     """Example usage of the CodeSimilarityAnalyzer."""
     analyzer = CodeSimilarityAnalyzer()
     
-    # Example: Compare two files
-    # You can replace these with actual file paths
-    file_a = input("Enter path to first file (A): ").strip()
-    file_b = input("Enter path to second file (B): ").strip()
+    print("Code Similarity Analyzer")
+    print("1. Compare two files")
+    print("2. Compare two code fragments")
     
-    # Get similarity threshold from user
-    threshold_input = input("Enter similarity threshold (0.0-1.0, default 0.7): ").strip()
-    threshold = float(threshold_input) if threshold_input else 0.7
+    choice = input("\nChoose an option (1 or 2): ").strip()
     
-    # Perform analysis
-    results = analyzer.analyze_code_similarity(file_a, file_b, threshold)
+    if choice == "2":
+        # Code fragment mode
+        print("\nEnter first code fragment (press Enter twice to finish):")
+        code_a_lines = []
+        while True:
+            line = input()
+            if line == "" and code_a_lines and code_a_lines[-1] == "":
+                break
+            code_a_lines.append(line)
+        code_a = '\n'.join(code_a_lines[:-1] if code_a_lines and code_a_lines[-1] == "" else code_a_lines)
+        
+        print("\nEnter second code fragment (press Enter twice to finish):")
+        code_b_lines = []
+        while True:
+            line = input()
+            if line == "" and code_b_lines and code_b_lines[-1] == "":
+                break
+            code_b_lines.append(line)
+        code_b = '\n'.join(code_b_lines[:-1] if code_b_lines and code_b_lines[-1] == "" else code_b_lines)
+        
+        # Get similarity threshold from user
+        threshold_input = input("\nEnter similarity threshold (0.0-1.0, default 0.7): ").strip()
+        threshold = float(threshold_input) if threshold_input else 0.7
+        
+        # Perform analysis on code fragments
+        results = analyzer.analyze_code_similarity(code_a, code_b, threshold, is_file=False)
+        
+    else:
+        # File mode (default)
+        file_a = input("\nEnter path to first file (A): ").strip()
+        file_b = input("Enter path to second file (B): ").strip()
+        
+        # Get similarity threshold from user
+        threshold_input = input("Enter similarity threshold (0.0-1.0, default 0.7): ").strip()
+        threshold = float(threshold_input) if threshold_input else 0.7
+        
+        # Perform analysis on files
+        results = analyzer.analyze_code_similarity(file_a, file_b, threshold, is_file=True)
     
     # Print detailed report
     analyzer.print_detailed_report(results)
@@ -416,7 +481,10 @@ def main():
     save_report = input("\nSave detailed report to file? (y/n): ").strip().lower()
     if save_report == 'y':
         import json
-        output_file = f"similarity_report_{hashlib.md5((file_a + file_b).encode()).hexdigest()[:8]}.json"
+        if results.get('is_file', True):
+            output_file = f"similarity_report_{hashlib.md5((results['input_a'] + results['input_b']).encode()).hexdigest()[:8]}.json"
+        else:
+            output_file = f"similarity_report_fragments_{hashlib.md5((results['input_a'] + results['input_b']).encode()).hexdigest()[:8]}.json"
         with open(output_file, 'w') as f:
             json.dump(results, f, indent=2)
         print(f"Report saved to {output_file}")

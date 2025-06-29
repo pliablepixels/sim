@@ -74,18 +74,49 @@ def interactive_mode():
     results = analyzer.analyze_code_similarity(file_a, file_b, threshold)
     analyzer.print_detailed_report(results)
 
+def demo_documentation_analysis():
+    """Demo documentation and comment analysis with complex files."""
+    analyzer = CodeSimilarityAnalyzer()
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    print("\n" + "=" * 60)
+    print("DOCUMENTATION ANALYSIS DEMO")
+    print("=" * 60)
+    print("This demo tests the analyzer's ability to detect similarity")
+    print("in code with extensive documentation and comments.\n")
+    
+    # Test with complex files if they exist
+    complex_a = os.path.join(current_dir, 'samples', 'complex_a.py')
+    complex_b = os.path.join(current_dir, 'samples', 'complex_b.py')
+    
+    if os.path.exists(complex_a) and os.path.exists(complex_b):
+        print(f"Analyzing complex files with documentation...")
+        results = analyzer.analyze_code_similarity(complex_a, complex_b, 0.6)
+        analyzer.print_detailed_report(results)
+    else:
+        print("Complex sample files not found. Using basic samples instead.")
+        sample_a = os.path.join(current_dir, 'samples', 'sample_a.py')
+        sample_c = os.path.join(current_dir, 'samples', 'sample_c.py')
+        
+        if os.path.exists(sample_a) and os.path.exists(sample_c):
+            results = analyzer.analyze_code_similarity(sample_a, sample_c, 0.6)
+            analyzer.print_detailed_report(results)
+
 def main():
     """Main function to run the demo."""
     print("Code Similarity Analyzer")
     print("1. Run demo with sample files")
     print("2. Interactive mode - compare your own files")
+    print("3. Documentation analysis demo")
     
-    choice = input("\nChoose an option (1 or 2): ").strip()
+    choice = input("\nChoose an option (1, 2, or 3): ").strip()
     
     if choice == "1":
         demo_comparison()
     elif choice == "2":
         interactive_mode()
+    elif choice == "3":
+        demo_documentation_analysis()
     else:
         print("Invalid choice. Running demo by default.")
         demo_comparison()

@@ -489,16 +489,71 @@ function checkInput(input: any): boolean {
         );
     }
 
+    /**
+     * Test analyzing code fragments instead of files
+     */
+    private testCodeFragmentAnalysis(): void {
+        console.log("\n--- Testing Code Fragment Analysis ---");
+        
+        const codeA = `function helloWorld(): boolean {
+    console.log("Hello, World!");
+    return true;
+}`;
+        
+        const codeB = `function greet(): boolean {
+    console.log("Hello, World!");
+    return true;
+}`;
+        
+        // Use the analyzer directly with code fragments
+        const results = this.analyzer.analyzeCodeSimilarity(codeA, codeB, 0.7, false);
+        
+        // Should detect high similarity despite different function names
+        const highSimilarity = results.similarityPercentage >= 60.0;
+        const hasSimilarLines = results.similarLinesCount > 0;
+        const isCodeFragmentMode = !results.isFile;
+        
+        this.assert(
+            highSimilarity && hasSimilarLines && isCodeFragmentMode,
+            `Code fragment analysis: ${results.similarityPercentage.toFixed(1)}% similarity (${results.similarLinesCount} of ${results.linesACount} lines matched)`,
+            "Code Fragment Analysis"
+        );
+    }
+
+    /**
+     * Test build validation - simple smoke test that TypeScript compilation works
+     */
+    private testBuildValidation(): void {
+        console.log("\n--- Testing Build Validation ---");
+        
+        // Simple test that the analyzer can be instantiated and basic functionality works
+        const testAnalyzer = new CodeSimilarityAnalyzer();
+        const simpleCodeA = "function test() { return 1; }";
+        const simpleCodeB = "function test() { return 1; }";
+        
+        const results = testAnalyzer.analyzeCodeSimilarity(simpleCodeA, simpleCodeB, 0.7, false);
+        
+        const buildWorks = results.similarityPercentage === 100.0 && !results.isFile;
+        
+        this.assert(
+            buildWorks,
+            `Build validation: TypeScript compilation and basic functionality works - ${results.similarityPercentage}% similarity`,
+            "Build Validation"
+        );
+    }
+
     runAllTests(): void {
         console.log("Starting TypeScript Code Similarity Analyzer Test Suite...");
         console.log("=" .repeat(70));
 
+        this.testBuildValidation();
         this.testIdenticalCodeDetection();
         this.testVariableNameChanges();
         this.testStructuralModifications();
         this.testDifferentImplementationsSameLogic();
         this.testCompletelyUnrelatedCode();
         this.testComplexSamplesSimilarity();
+        this.testCodeFragmentAnalysis();
         this.testPercentageAndCountReporting();
         this.testThresholdSensitivity();
         this.testEdgeCases();

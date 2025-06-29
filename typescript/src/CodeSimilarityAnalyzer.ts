@@ -7,8 +7,9 @@ interface SimilarMatch {
 }
 
 interface AnalysisResults {
-  fileA: string;
-  fileB: string;
+  inputA: string;
+  inputB: string;
+  isFile: boolean;
   linesACount: number;
   linesBCount: number;
   similarLinesCount: number;
@@ -297,6 +298,30 @@ export class CodeSimilarityAnalyzer {
   }
 
   /**
+   * Process a code fragment string into meaningful lines
+   */
+  private preprocessCodeFragment(code: string): string[] {
+    if (!code) {
+      return [];
+    }
+
+    // Split into lines
+    const lines = code.split('\n');
+
+    // Filter for meaningful code lines
+    const meaningfulLines: string[] = [];
+    for (const line of lines) {
+      const normalized = this.normalizeLine(line);
+      // Keep lines that have substantial content and are not trivial
+      if (normalized && normalized.length > 3 && !this.isTrivialLine(normalized)) {
+        meaningfulLines.push(line.trimEnd());
+      }
+    }
+
+    return meaningfulLines;
+  }
+
+  /**
    * Read and preprocess a file, extracting meaningful code lines
    */
   private preprocessFile(filepath: string): string[] {
@@ -388,20 +413,40 @@ export class CodeSimilarityAnalyzer {
   }
 
   /**
-   * Analyze similarity between two code files (exact Python mirror)
+   * Analyze similarity between two code inputs (files or code fragments)
    */
-  public analyzeCodeSimilarity(fileA: string, fileB: string, similarityThreshold: number = 0.7): AnalysisResults {
-    console.log(`Analyzing similarity between ${fileA} and ${fileB}`);
-    console.log(`Similarity threshold: ${similarityThreshold}`);
+  public analyzeCodeSimilarity(
+    inputA: string, 
+    inputB: string, 
+    similarityThreshold: number = 0.7, 
+    isFile: boolean = true
+  ): AnalysisResults {
+    let sourceA: string, sourceB: string;
+    let linesA: string[], linesB: string[];
 
-    // Read and preprocess files
-    const linesA = this.preprocessFile(fileA);
-    const linesB = this.preprocessFile(fileB);
+    if (isFile) {
+      console.log(`Analyzing similarity between files ${inputA} and ${inputB}`);
+      sourceA = inputA;
+      sourceB = inputB;
+      // Read and preprocess files
+      linesA = this.preprocessFile(inputA);
+      linesB = this.preprocessFile(inputB);
+    } else {
+      console.log('Analyzing similarity between code fragments');
+      sourceA = 'Code Fragment A';
+      sourceB = 'Code Fragment B';
+      // Process code fragments directly
+      linesA = this.preprocessCodeFragment(inputA);
+      linesB = this.preprocessCodeFragment(inputB);
+    }
+
+    console.log(`Similarity threshold: ${similarityThreshold}`);
 
     if (linesA.length === 0 || linesB.length === 0) {
       return {
-        fileA,
-        fileB,
+        inputA: sourceA,
+        inputB: sourceB,
+        isFile,
         linesACount: linesA.length,
         linesBCount: linesB.length,
         similarLinesCount: 0,
@@ -411,7 +456,7 @@ export class CodeSimilarityAnalyzer {
         similarMatches: [],
         similarityDistribution: {},
         interpretation: "Very Low Similarity - Largely different code",
-        error: 'One or both files could not be read or contain no meaningful code'
+        error: 'One or both inputs could not be read or contain no meaningful code'
       };
     }
 
@@ -474,8 +519,9 @@ export class CodeSimilarityAnalyzer {
       : 0.0;
 
     const results: AnalysisResults = {
-      fileA,
-      fileB,
+      inputA: sourceA,
+      inputB: sourceB,
+      isFile,
       linesACount: totalLinesA,
       linesBCount: totalLinesB,
       similarLinesCount,
@@ -500,10 +546,12 @@ export class CodeSimilarityAnalyzer {
     }
 
     console.log('='.repeat(80));
-    console.log('SAME-LANGUAGE CODE SIMILARITY ANALYSIS');
+    console.log('CODE SIMILARITY ANALYSIS');
     console.log('='.repeat(80));
-    console.log(`File A: ${results.fileA}`);
-    console.log(`File B: ${results.fileB}`);
+    const inputType = results.isFile ? 'Files' : 'Code Fragments';
+    console.log(`Input Type: ${inputType}`);
+    console.log(`Input A: ${results.inputA}`);
+    console.log(`Input B: ${results.inputB}`);
     console.log(`Threshold: ${results.similarityThreshold}`);
     console.log('-'.repeat(80));
     console.log(`Meaningful Lines A: ${results.linesACount}`);
