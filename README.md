@@ -1,5 +1,10 @@
 # Code Similarity Analyzer
 
+#### Note: 
+This is AI generated code - Sonnet 4 + Agentic copilot. That is why you'll see pompous commentary in various places. The flow however of how it compares seems reasonable
+
+## What
+
 A sophisticated same-language code similarity analyzer designed to **measure code influence and attribution**. Specifically designed to analyze how much of a user's final code was derived from suggestions or other sources, even after user modifications.
 
 ## Primary Use Case: Code Attribution Analysis
