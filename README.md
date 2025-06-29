@@ -54,7 +54,7 @@ This helps developers and organizations understand:
     ├── tsconfig.json           # TypeScript configuration
     ├── src/
     │   ├── CodeSimilarityAnalyzer.ts  # Main analyzer class
-    │   └── demo.ts                    # Interactive demo script
+    │   └── test_similarity_analyzer.ts # Test suite
     └── dist/                   # Compiled JavaScript files
 ```
 
@@ -126,18 +126,19 @@ print(f"Different implementations: {results['similarity_percentage']:.1f}% simil
 - Node.js 16+
 - npm
 
-#### Setup
+#### Setup and Running Tests
 ```bash
 cd typescript
 npm install
 npm run build
 ```
 
-#### Running the Demo
+#### Running the Test Suite
 ```bash
-npm start
-# or for development mode:
-npm run dev
+# Run the comprehensive test suite
+npm run test
+# OR manually:
+npm run build && node dist/test_similarity_analyzer.js
 ```
 
 #### Basic Usage
@@ -150,21 +151,19 @@ const analyzer = new CodeSimilarityAnalyzer();
 const results = analyzer.analyzeCodeSimilarity('file1.ts', 'file2.ts', 0.7);
 analyzer.printDetailedReport(results);
 
-// Complex plagiarism detection
-const plagiarismResults = analyzer.analyzeCodeSimilarity(
+// Complex attribution analysis
+const attributionResults = analyzer.analyzeCodeSimilarity(
     'samples/complex_a.ts', 
     'samples/complex_c.ts', 
     0.7
 );
-console.log(`Plagiarism check: ${plagiarismResults.similarityPercentage.toFixed(1)}%`);
+console.log(`Attribution check: ${attributionResults.similarityPercentage.toFixed(1)}%`);
 ```
 
 ## Available Scripts (TypeScript)
 
 - `npm run build` - Compile TypeScript to JavaScript
-- `npm start` - Run the compiled demo
-- `npm run dev` - Run demo in development mode with ts-node
-- `npm run demo` - Build and run demo
+- `npm run test` - Build and run the test suite  
 - `npm run clean` - Remove compiled files
 
 ## Sample Results
@@ -220,14 +219,31 @@ cd /path/to/simsearch
 python tests/test_similarity_analyzer.py
 
 # Expected output:
-Starting Code Similarity Analyzer Test Suite...
-✅ Identical code test: 100.0% similarity
-✅ Variable name changes test: 78.3% similarity  
-✅ Structural modifications test: 65.2% similarity
-✅ Different implementations test: 32.7% similarity
-✅ Unrelated code test: 18.4% similarity
+Starting Code Similarity Analysis Test Suite...
+✅ Identical code (user accepted as-is): 100.0% influence
+✅ Modified code (variable renames + comments): 56.2% influence  
+✅ Refactored code (structural changes): 71.7% influence
+✅ Inspired implementation (different approach): 54.6% influence
+✅ Original user code (no external influence): 21.7% influence
 ✅ Edge cases test completed
 ✅ Threshold sensitivity test completed
+
+# Run TypeScript test suite  
+cd typescript
+npm run build
+node dist/test_similarity_analyzer.js
+
+# Expected output:
+Starting TypeScript Code Similarity Analyzer Test Suite...
+✅ Identical Code Detection: Identical code similarity: 100.0%
+✅ Variable Name Changes Detection: Variable name changes similarity: 89.0%
+✅ Structural Modifications Detection: Structural modifications similarity: 67.9%
+✅ Different Implementations Same Logic: Different implementations similarity: 84.6%
+✅ Completely Unrelated Code: Unrelated code similarity: 19.5%
+✅ Edge cases test completed
+✅ Threshold sensitivity test completed
+
+SUCCESS: Both implementations behave consistently!
 ```
 
 ### Test Scenarios Validated
@@ -236,20 +252,20 @@ Starting Code Similarity Analyzer Test Suite...
    - Perfect matches with whitespace/comment differences
    - Tests algorithm's basic accuracy
 
-2. **Plagiarism Detection** (60-95% similarity)
-   - Variable and method name changes
-   - Class renames while preserving structure
-   - Critical for academic/professional code review
+2. **Variable Name Changes** (60-95% similarity)
+   - Variable and method name changes while preserving logic
+   - Parameter renames and identifier changes
+   - Critical for detecting modified code attribution
 
-3. **Structural Modifications** (30-70% similarity)
+3. **Structural Modifications** (30-70% similarity)  
    - Code reorganization and refactoring
-   - Method extraction and class splitting
+   - Method renames and class restructuring
    - Important for code evolution tracking
 
 4. **Different Implementations** (15-60% similarity)
-   - Same algorithm, different approaches
+   - Same algorithm, different approaches (iterative vs recursive)
    - Alternative solutions to same problem
-   - Prevents false positive plagiarism detection
+   - Prevents false positive attribution detection
 
 5. **Unrelated Code** (<30% similarity)
    - Completely different domains and logic

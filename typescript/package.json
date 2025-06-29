@@ -5,9 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/demo.js",
-    "dev": "ts-node src/demo.ts",
-    "demo": "npm run build && npm start",
+    "test": "npm run build && node dist/test_similarity_analyzer.js",
     "clean": "rm -rf dist"
   },
   "keywords": ["code", "similarity", "analysis", "typescript"],

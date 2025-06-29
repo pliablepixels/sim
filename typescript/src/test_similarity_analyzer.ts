@@ -10,8 +10,7 @@
  * - Edge cases and boundary conditions
  * 
  * Usage:
- *   cd typescript && npm run build && node dist/test_similarity_analyzer.js
- *   OR from tests directory: npm run --prefix ../typescript build && node ../typescript/dist/test_similarity_analyzer.js
+ *   npm run build && npm run test
  * 
  * The test suite provides detailed assertions and reporting to help developers
  * understand how the similarity analyzer behaves in different scenarios.
@@ -20,7 +19,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
-import { CodeSimilarityAnalyzer } from '../typescript/src/CodeSimilarityAnalyzer';
+import { CodeSimilarityAnalyzer } from './CodeSimilarityAnalyzer';
 
 export class TypeScriptSimilarityTester {
     private analyzer: CodeSimilarityAnalyzer;

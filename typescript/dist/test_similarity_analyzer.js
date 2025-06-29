@@ -1,72 +1,101 @@
+"use strict";
 /**
  * Comprehensive Test Suite for TypeScript Code Similarity Analyzer
- * 
+ *
  * This test suite validates the accuracy and behavior of the Code Similarity Analyzer
  * with various TypeScript scenarios including:
  * - Identical code detection
- * - Plagiarism detection (modified variable names, structure changes)  
+ * - Plagiarism detection (modified variable names, structure changes)
  * - Different implementations of same functionality
  * - Unrelated code detection
  * - Edge cases and boundary conditions
- * 
+ *
  * Usage:
- *   cd typescript && npm run build && node dist/test_similarity_analyzer.js
- *   OR from tests directory: npm run --prefix ../typescript build && node ../typescript/dist/test_similarity_analyzer.js
- * 
+ *   npm run build && npm run test
+ *
  * The test suite provides detailed assertions and reporting to help developers
  * understand how the similarity analyzer behaves in different scenarios.
  */
-
-import * as fs from 'fs';
-import * as path from 'path';
-import * as os from 'os';
-import { CodeSimilarityAnalyzer } from '../typescript/src/CodeSimilarityAnalyzer';
-
-export class TypeScriptSimilarityTester {
-    private analyzer: CodeSimilarityAnalyzer;
-    private samplesDir: string;
-    private testResults: Array<{test: string, passed: boolean, details: string}> = [];
-
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TypeScriptSimilarityTester = void 0;
+exports.runTypeScriptTests = runTypeScriptTests;
+const fs = __importStar(require("fs"));
+const path = __importStar(require("path"));
+const os = __importStar(require("os"));
+const CodeSimilarityAnalyzer_1 = require("./CodeSimilarityAnalyzer");
+class TypeScriptSimilarityTester {
     constructor() {
-        this.analyzer = new CodeSimilarityAnalyzer();
+        this.testResults = [];
+        this.analyzer = new CodeSimilarityAnalyzer_1.CodeSimilarityAnalyzer();
         this.samplesDir = path.join(__dirname);
     }
-
-    private createTempFile(content: string): string {
+    createTempFile(content) {
         const tempPath = path.join(os.tmpdir(), `test_${Date.now()}_${Math.random().toString(36).substr(2, 9)}.ts`);
         fs.writeFileSync(tempPath, content);
         return tempPath;
     }
-
-    private analyzeSimilarity(contentA: string, contentB: string, threshold: number = 0.7): any {
+    analyzeSimilarity(contentA, contentB, threshold = 0.7) {
         const fileA = this.createTempFile(contentA);
         const fileB = this.createTempFile(contentB);
-        
         try {
             const results = this.analyzer.analyzeCodeSimilarity(fileA, fileB, threshold);
             return results;
-        } finally {
+        }
+        finally {
             // Clean up temporary files
-            if (fs.existsSync(fileA)) fs.unlinkSync(fileA);
-            if (fs.existsSync(fileB)) fs.unlinkSync(fileB);
+            if (fs.existsSync(fileA))
+                fs.unlinkSync(fileA);
+            if (fs.existsSync(fileB))
+                fs.unlinkSync(fileB);
         }
     }
-
-    private assert(condition: boolean, message: string, testName: string): void {
+    assert(condition, message, testName) {
         this.testResults.push({
             test: testName,
             passed: condition,
             details: message
         });
-        
         if (condition) {
             console.log(`✅ ${testName}: ${message}`);
-        } else {
+        }
+        else {
             console.log(`❌ ${testName}: ${message}`);
         }
     }
-
-    testIdenticalCodeDetection(): void {
+    testIdenticalCodeDetection() {
         const code = `
 interface User {
     id: number;
@@ -89,17 +118,10 @@ class UserManager {
         return [...this.users];
     }
 }`;
-
         const results = this.analyzeSimilarity(code, code, 0.9);
-        
-        this.assert(
-            results.similarityPercentage >= 90.0,
-            `Identical code similarity: ${results.similarityPercentage.toFixed(1)}%`,
-            "Identical Code Detection"
-        );
+        this.assert(results.similarityPercentage >= 90.0, `Identical code similarity: ${results.similarityPercentage.toFixed(1)}%`, "Identical Code Detection");
     }
-
-    testVariableNameChanges(): void {
+    testVariableNameChanges() {
         const originalCode = `
 function calculateCompoundInterest(principal: number, rate: number, time: number): number {
     const amount = principal * Math.pow(1 + rate, time);
@@ -124,7 +146,6 @@ function checkIfUserExists(username: string): boolean {
 function createNewUser(username: string, email: string, password: string): void {
     // Simulation
 }`;
-
         const modifiedCode = `
 function calculateCompoundInterest(initialAmount: number, interestRate: number, duration: number): number {
     const finalAmount = initialAmount * Math.pow(1 + interestRate, duration);
@@ -149,17 +170,10 @@ function checkIfUserExists(userId: string): boolean {
 function createNewUser(userId: string, userEmail: string, userPassword: string): void {
     // Simulation
 }`;
-
         const results = this.analyzeSimilarity(originalCode, modifiedCode, 0.6);
-        
-        this.assert(
-            results.similarityPercentage >= 60.0 && results.similarityPercentage <= 95.0,
-            `Variable name changes similarity: ${results.similarityPercentage.toFixed(1)}%`,
-            "Variable Name Changes Detection"
-        );
+        this.assert(results.similarityPercentage >= 60.0 && results.similarityPercentage <= 95.0, `Variable name changes similarity: ${results.similarityPercentage.toFixed(1)}%`, "Variable Name Changes Detection");
     }
-
-    testStructuralModifications(): void {
+    testStructuralModifications() {
         const originalCode = `
 class DataProcessor {
     private data: number[] = [];
@@ -182,7 +196,6 @@ class DataProcessor {
         return Math.min(...this.data);
     }
 }`;
-
         const modifiedCode = `
 class NumberAnalyzer {
     private numbers: number[] = [];
@@ -209,17 +222,10 @@ class NumberAnalyzer {
         return this.numbers.length;
     }
 }`;
-
         const results = this.analyzeSimilarity(originalCode, modifiedCode, 0.4);
-        
-        this.assert(
-            results.similarityPercentage >= 30.0 && results.similarityPercentage <= 70.0,
-            `Structural modifications similarity: ${results.similarityPercentage.toFixed(1)}%`,
-            "Structural Modifications Detection"
-        );
+        this.assert(results.similarityPercentage >= 30.0 && results.similarityPercentage <= 70.0, `Structural modifications similarity: ${results.similarityPercentage.toFixed(1)}%`, "Structural Modifications Detection");
     }
-
-    testDifferentImplementationsSameLogic(): void {
+    testDifferentImplementationsSameLogic() {
         const binarySearchIterative = `
 function binarySearchIterative(arr: number[], target: number): number {
     let left = 0;
@@ -243,7 +249,6 @@ function binarySearchIterative(arr: number[], target: number): number {
 function sortArray(numbers: number[]): number[] {
     return numbers.sort((a, b) => a - b);
 }`;
-
         const binarySearchRecursive = `
 function binarySearchRecursive(arr: number[], target: number, left: number = 0, right: number = arr.length - 1): number {
     if (left > right) {
@@ -264,17 +269,10 @@ function binarySearchRecursive(arr: number[], target: number, left: number = 0, 
 function arrangeNumbers(data: number[]): number[] {
     return data.slice().sort((x, y) => x - y);
 }`;
-
         const results = this.analyzeSimilarity(binarySearchIterative, binarySearchRecursive, 0.3);
-        
-        this.assert(
-            results.similarityPercentage >= 15.0 && results.similarityPercentage <= 60.0,
-            `Different implementations similarity: ${results.similarityPercentage.toFixed(1)}%`,
-            "Different Implementations Same Logic"
-        );
+        this.assert(results.similarityPercentage >= 15.0 && results.similarityPercentage <= 60.0, `Different implementations similarity: ${results.similarityPercentage.toFixed(1)}%`, "Different Implementations Same Logic");
     }
-
-    testCompletelyUnrelatedCode(): void {
+    testCompletelyUnrelatedCode() {
         const apiClient = `
 interface ApiResponse<T> {
     data: T;
@@ -326,7 +324,6 @@ class HttpClient {
         }
     }
 }`;
-
         const geometryCalculations = `
 interface Point {
     x: number;
@@ -366,32 +363,18 @@ class GeometryCalculator {
         return 0.5 * base * height;
     }
 }`;
-
         const results = this.analyzeSimilarity(apiClient, geometryCalculations, 0.1);
-        
-        this.assert(
-            results.similarityPercentage <= 30.0,
-            `Unrelated code similarity: ${results.similarityPercentage.toFixed(1)}%`,
-            "Completely Unrelated Code"
-        );
+        this.assert(results.similarityPercentage <= 30.0, `Unrelated code similarity: ${results.similarityPercentage.toFixed(1)}%`, "Completely Unrelated Code");
     }
-
-    testComplexSamplesSimilarity(): void {
+    testComplexSamplesSimilarity() {
         const complexAPath = path.join(this.samplesDir, "complex_a.ts");
         const complexBPath = path.join(this.samplesDir, "complex_b.ts");
-
         if (fs.existsSync(complexAPath) && fs.existsSync(complexBPath)) {
             const results = this.analyzer.analyzeCodeSimilarity(complexAPath, complexBPath, 0.3);
-            
-            this.assert(
-                results.similarityPercentage >= 20.0 && results.similarityPercentage <= 60.0,
-                `Complex samples similarity: ${results.similarityPercentage.toFixed(1)}%`,
-                "Complex Samples Different Implementations"
-            );
+            this.assert(results.similarityPercentage >= 20.0 && results.similarityPercentage <= 60.0, `Complex samples similarity: ${results.similarityPercentage.toFixed(1)}%`, "Complex Samples Different Implementations");
         }
     }
-
-    testThresholdSensitivity(): void {
+    testThresholdSensitivity() {
         const codeA = `
 function processArray(inputArray: number[]): number[] {
     const result: number[] = [];
@@ -406,7 +389,6 @@ function processArray(inputArray: number[]): number[] {
 function validateInput(data: any): boolean {
     return data !== null && data !== undefined;
 }`;
-
         const codeB = `
 function handleArray(dataArray: number[]): number[] {
     const output: number[] = [];
@@ -421,78 +403,45 @@ function handleArray(dataArray: number[]): number[] {
 function checkInput(input: any): boolean {
     return input !== null && input !== undefined;
 }`;
-
         const thresholds = [0.3, 0.5, 0.7, 0.9];
-        const resultsByThreshold: {[key: number]: any} = {};
-
+        const resultsByThreshold = {};
         console.log("\nThreshold Sensitivity Analysis:");
-        
         for (const threshold of thresholds) {
             const results = this.analyzeSimilarity(codeA, codeB, threshold);
             resultsByThreshold[threshold] = results;
-            
             console.log(`  Threshold ${threshold}: ${results.similarityPercentage.toFixed(1)}% similarity, ${results.similarMatches.length} matches`);
         }
-
         // Verify that higher thresholds generally result in fewer matches
         let thresholdTestPassed = true;
         for (let i = 0; i < thresholds.length - 1; i++) {
             const currThreshold = thresholds[i];
             const nextThreshold = thresholds[i + 1];
-            
             const currMatches = resultsByThreshold[currThreshold].similarMatches.length;
             const nextMatches = resultsByThreshold[nextThreshold].similarMatches.length;
-            
             if (currMatches < nextMatches) {
                 thresholdTestPassed = false;
                 break;
             }
         }
-
-        this.assert(
-            thresholdTestPassed,
-            "Higher thresholds produce fewer matches as expected",
-            "Threshold Sensitivity"
-        );
+        this.assert(thresholdTestPassed, "Higher thresholds produce fewer matches as expected", "Threshold Sensitivity");
     }
-
-    testEdgeCases(): void {
+    testEdgeCases() {
         // Empty files
         const emptyResults = this.analyzeSimilarity("", "", 0.5);
-        this.assert(
-            emptyResults.similarityPercentage === 0.0,
-            "Empty files have 0% similarity",
-            "Edge Case: Empty Files"
-        );
-
+        this.assert(emptyResults.similarityPercentage === 0.0, "Empty files have 0% similarity", "Edge Case: Empty Files");
         // Single line files
-        const singleLineResults = this.analyzeSimilarity(
-            "console.log('hello');",
-            "console.log('hello');",
-            0.5
-        );
-        this.assert(
-            singleLineResults.similarityPercentage >= 90.0,
-            `Identical single lines: ${singleLineResults.similarityPercentage.toFixed(1)}% similarity`,
-            "Edge Case: Single Line Files"
-        );
-
+        const singleLineResults = this.analyzeSimilarity("console.log('hello');", "console.log('hello');", 0.5);
+        this.assert(singleLineResults.similarityPercentage >= 90.0, `Identical single lines: ${singleLineResults.similarityPercentage.toFixed(1)}% similarity`, "Edge Case: Single Line Files");
         // Files with only comments
         const commentsA = "// This is a comment\n// Another comment";
         const commentsB = "// Different comment\n// Yet another comment";
         const commentResults = this.analyzeSimilarity(commentsA, commentsB, 0.5);
-        
-        this.assert(
-            true, // Comments are removed during preprocessing
-            `Comment-only files: ${commentResults.similarityPercentage.toFixed(1)}% similarity`,
-            "Edge Case: Comment-Only Files"
-        );
+        this.assert(true, // Comments are removed during preprocessing
+        `Comment-only files: ${commentResults.similarityPercentage.toFixed(1)}% similarity`, "Edge Case: Comment-Only Files");
     }
-
-    runAllTests(): void {
+    runAllTests() {
         console.log("Starting TypeScript Code Similarity Analyzer Test Suite...");
-        console.log("=" .repeat(70));
-
+        console.log("=".repeat(70));
         this.testIdenticalCodeDetection();
         this.testVariableNameChanges();
         this.testStructuralModifications();
@@ -501,23 +450,18 @@ function checkInput(input: any): boolean {
         this.testComplexSamplesSimilarity();
         this.testThresholdSensitivity();
         this.testEdgeCases();
-
         this.generateTestReport();
     }
-
-    private generateTestReport(): void {
+    generateTestReport() {
         console.log("\n" + "=".repeat(70));
         console.log("TEST RESULTS SUMMARY");
         console.log("=".repeat(70));
-
         const passedTests = this.testResults.filter(r => r.passed).length;
         const totalTests = this.testResults.length;
-
         console.log(`\nTotal Tests: ${totalTests}`);
         console.log(`Passed: ${passedTests}`);
         console.log(`Failed: ${totalTests - passedTests}`);
         console.log(`Success Rate: ${((passedTests / totalTests) * 100).toFixed(1)}%`);
-
         const failedTests = this.testResults.filter(r => !r.passed);
         if (failedTests.length > 0) {
             console.log("\nFailed Tests:");
@@ -525,7 +469,6 @@ function checkInput(input: any): boolean {
                 console.log(`  ❌ ${test.test}: ${test.details}`);
             });
         }
-
         console.log("\n" + "=".repeat(70));
         console.log("SIMILARITY INTERPRETATION GUIDE:");
         console.log("- >90% similarity: Likely identical or very minor changes");
@@ -536,12 +479,12 @@ function checkInput(input: any): boolean {
         console.log("=".repeat(70));
     }
 }
-
+exports.TypeScriptSimilarityTester = TypeScriptSimilarityTester;
 // Export for use in other modules
-export function runTypeScriptTests(): void {
+function runTypeScriptTests() {
     const tester = new TypeScriptSimilarityTester();
     tester.runAllTests();
 }
-
 // Run tests if this file is executed directly
 runTypeScriptTests();
+//# sourceMappingURL=test_similarity_analyzer.js.map
