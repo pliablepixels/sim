@@ -10,7 +10,6 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 # Import the code similarity analyzer
 from python.code_similarity_analyzer import CodeSimilarityAnalyzer
-import os
 
 def demo_comparison():
     """Demo the code similarity analyzer with sample files."""
@@ -18,8 +17,8 @@ def demo_comparison():
     
     # Define paths to our sample files
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    file_a = os.path.join(current_dir, "sample_a.py")
-    file_b = os.path.join(current_dir, "sample_c.py")
+    file_a = os.path.join(current_dir, "samples/sample_a.py")
+    file_b = os.path.join(current_dir, "samples/sample_c.py")
     
     print("=== CODE SIMILARITY ANALYZER DEMO ===")
     print(f"Comparing:\n  File A: {file_a}\n  File B: {file_b}\n")
