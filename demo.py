@@ -50,28 +50,52 @@ def demo_comparison():
                 print(f"  B[{line_b_idx+1}]: {lines_b[line_b_idx].strip()}")
 
 def interactive_mode():
-    """Run the analyzer in interactive mode."""
+    """Run the analyzer in interactive mode with auto file/text detection."""
     analyzer = CodeSimilarityAnalyzer()
     
     print("\n=== INTERACTIVE MODE ===")
-    print("Enter the paths to two files you want to compare:")
+    print("Enter file paths or code text")
+    print("(If files don't exist, input will be treated as code text)")
     
-    file_a = input("Path to file A: ").strip()
-    file_b = input("Path to file B: ").strip()
+    input_a = input("\nEnter first file path or code text: ").strip()
+    input_b = input("Enter second file path or code text: ").strip()
     
-    if not os.path.exists(file_a):
-        print(f"Error: File A '{file_a}' does not exist!")
-        return
-    
-    if not os.path.exists(file_b):
-        print(f"Error: File B '{file_b}' does not exist!")
-        return
-    
-    threshold_input = input("Similarity threshold (0.0-1.0, default 0.7): ").strip()
+    # Get similarity threshold from user
+    threshold_input = input("\nEnter similarity threshold (0.0-1.0, default 0.7): ").strip()
     threshold = float(threshold_input) if threshold_input else 0.7
     
-    print(f"\nAnalyzing files with threshold {threshold}...")
-    results = analyzer.analyze_code_similarity(file_a, file_b, threshold)
+    # Auto-detect if inputs are files or text
+    is_file_a = os.path.isfile(input_a)
+    is_file_b = os.path.isfile(input_b)
+    
+    if is_file_a and is_file_b:
+        # Both are files
+        print(f"\nDetected: Both inputs are files")
+        results = analyzer.analyze_code_similarity(input_a, input_b, threshold, is_file=True)
+    elif not is_file_a and not is_file_b:
+        # Both are text
+        print(f"\nDetected: Both inputs are code text")
+        results = analyzer.analyze_code_similarity(input_a, input_b, threshold, is_file=False)
+    else:
+        # Mixed - one file, one text (treat both as text for consistency)
+        print(f"\nDetected: Mixed input types - treating both as code text")
+        # If one is a file, read it as text
+        if is_file_a:
+            try:
+                with open(input_a, 'r', encoding='utf-8', errors='ignore') as f:
+                    input_a = f.read()
+            except Exception as e:
+                print(f"Error reading file {input_a}: {e}")
+                input_a = ""
+        if is_file_b:
+            try:
+                with open(input_b, 'r', encoding='utf-8', errors='ignore') as f:
+                    input_b = f.read()
+            except Exception as e:
+                print(f"Error reading file {input_b}: {e}")
+                input_b = ""
+        results = analyzer.analyze_code_similarity(input_a, input_b, threshold, is_file=False)
+    
     analyzer.print_detailed_report(results)
 
 def demo_documentation_analysis():
@@ -106,7 +130,7 @@ def main():
     """Main function to run the demo."""
     print("Code Similarity Analyzer")
     print("1. Run demo with sample files")
-    print("2. Interactive mode - compare your own files")
+    print("2. Interactive mode - compare your own files or text")
     print("3. Documentation analysis demo")
     
     choice = input("\nChoose an option (1, 2, or 3): ").strip()
