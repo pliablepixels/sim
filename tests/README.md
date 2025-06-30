@@ -1,6 +1,6 @@
 # Testing Guide for Code Similarity Analyzer
 
-This document provides comprehensive information about testing the Code Similarity Analyzer# Starting Code Similarity Analysis Test Suite...
+This document provides information about testing the Code Similarity Analyzer# Starting Code Similarity Analysis Test Suite...
 ============================================================
 ✅ Identical code (user accepted as-is): 100.0% similarity (8 of 8 lines matched)
 ✅ Modified code (variable renames + comments): 56.2% similarity (5 of 9 lines matched)  
@@ -88,7 +88,7 @@ python3 -m pip install --user unittest  # Usually included with Python
 
 ### Execute Test Suite
 ```bash
-# Run comprehensive test suite for code attribution analysis
+# Run test suite for code attribution analysis
 python tests/test_similarity_analyzer.py
 
 # Run with verbose output to see detailed influence metrics
@@ -140,7 +140,7 @@ Both Python and TypeScript implementations now behave consistently:
 
 ### Execute Test Suite
 ```bash
-# Run comprehensive test suite for code attribution analysis
+# Run test suite for code attribution analysis
 python3 test_similarity_analyzer.py
 
 # Run with verbose output to see detailed influence metrics

@@ -40,7 +40,7 @@ The Code Similarity Analyzer compares two code files and tells you how similar t
 
 ## How the Algorithm Works
 
-The algorithm works like a careful reader comparing two books. It goes through both code files step by step, looking for similarities in different ways. Here's the basic flow:
+The algorithm works like a reader comparing two books. It goes through both code files step by step, looking for similarities in different ways. Here's the basic flow:
 
 ```
 Two Code Files
@@ -484,7 +484,7 @@ weights = {'sequence': 0.2, 'token': 0.2, 'structural': 0.4, 'documentation': 0.
 
 ## Future Enhancements
 
-### 1. Advanced Similarity Metrics
+### 1. Additional Similarity Metrics
 - **Semantic Analysis**: Incorporate abstract syntax tree comparison
 - **Control Flow Analysis**: Compare program flow patterns
 - **Data Flow Analysis**: Track variable usage patterns
@@ -669,7 +669,7 @@ Input Files (A, B)
     ├── Language-Specific Comment Extraction and Preservation
     ├── Enhanced Whitespace Normalization
     ├── Language-Aware Case Standardization
-    ├── Intelligent Line Filtering
+    ├── Line Filtering
     └── Documentation Categorization
         ↓
 [2] Language-Enhanced Feature Extraction ← MODIFIED
@@ -685,7 +685,7 @@ Input Files (A, B)
     ├── Context-Aware Structural Comparison
     └── Documentation Content Analysis
         ↓
-[4] Intelligent Matching Phase ← MODIFIED
+[4] Matching Phase ← MODIFIED
     ├── Language-Optimized Comparison
     ├── Content-Type-Aware Matching
     ├── Adaptive Threshold Application
@@ -695,7 +695,7 @@ Input Files (A, B)
     ├── Language-Aware Statistics
     ├── Documentation Analysis Results
     ├── Context-Enriched Analysis
-    └── Comprehensive Report Generation
+    └── Report Generation
 ```
 
 #### Implementation Enhancements
@@ -887,4 +887,4 @@ The algorithm's modular design allows for customization and extension, making it
 
 ---
 
-*This design document serves as a comprehensive guide for understanding, implementing, and extending the Code Similarity Analyzer algorithm.*
+*This document explains how the Code Similarity Analyzer algorithm works and how to implement it.*

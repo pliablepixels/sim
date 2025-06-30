@@ -1,11 +1,11 @@
 # Code Similarity Analyzer
 
 #### Note: 
-This is largely AI generated code - Sonnet 4 + Agentic copilot. That is why you my still see pompous commentary in various places. I started by developing it in python by guiding it on an algorithm I want. I then used it exclusively to create a typescript port as I've largely forgotten TS. 
+This is largely AI generated code - Sonnet 4 + Agentic copilot. I started by developing it in python by guiding it on what I algorithmically want. I then used it exclusively to create a typescript port as I've largely forgotten TS. 
 
 ## What
 
-A sophisticated same-language code similarity analyzer designed to **measure code influence and attribution**. Specifically designed to analyze how much of a user's final code was derived from suggestions or other sources, even after user modifications.
+A same-language code similarity analyzer that measures code influence and attribution. Analyzes how much of a user's final code was derived from suggestions or other sources, even after user modifications.
 
 ## Primary Use Case: Code Attribution Analysis
 
@@ -22,32 +22,32 @@ This helps developers and organizations understand:
 
 ## Features
 
-- **Same-Language Focus**: Optimized for accurate detection within the same programming language
+- **Same-Language Focus**: Optimized for detection within the same programming language
 - **Dual Implementation**: Choose between Python and TypeScript versions
-- **Intelligent Analysis**: 
-  - Advanced tokenization and structural pattern recognition
-  - Adaptive similarity calculation for different scenarios
+- **Analysis Features**: 
+  - Tokenization and structural pattern recognition
+  - Similarity calculation for different scenarios
   - One-to-one line matching to prevent false positives
 - **Multiple Similarity Metrics**: 
   - Sequence similarity using difflib for code structure
   - Token-based Jaccard similarity for content overlap
   - String similarity for variable name change detection
   - Structural feature matching for code patterns
-- **Comprehensive Testing**: Validated against realistic scenarios including plagiarism detection
-- **Detailed Reporting**: Get comprehensive analysis with interpretation guidelines
+- **Testing**: Validated against realistic scenarios including plagiarism detection
+- **Reporting**: Get analysis with interpretation guidelines
 
 ## Project Structure
 
 ```
-├── README.md                    # This comprehensive documentation
-├── ALGORITHM_DESIGN.md          # Detailed algorithm design document
+├── README.md                    # This documentation
+├── ALGORITHM_DESIGN.md          # Algorithm design document
 ├── samples/                     # Sample files for testing and validation
 │   ├── sample_a.py/.ts/.java   # Simple samples for basic testing
 │   ├── sample_c.py/.ts/.java   # Modified copies (plagiarism examples)
 │   ├── complex_a.py/.ts        # Complex e-commerce system (150+ lines)
 │   ├── complex_b.py/.ts        # Different implementation, same domain
 │   └── complex_c.py            # Plagiarized version with renamed variables
-├── tests/                       # Comprehensive test suite
+├── tests/                       # Test suite
 │   ├── test_similarity_analyzer.py     # Python unittest framework
 │   ├── test_similarity_analyzer.ts     # TypeScript test suite
 │   └── README.md               # Testing documentation
@@ -65,7 +65,7 @@ This helps developers and organizations understand:
 
 ## Algorithm Overview
 
-The `CodeSimilarityAnalyzer` uses an advanced multi-layered approach optimized for same-language similarity detection:
+The `CodeSimilarityAnalyzer` uses a multi-layered approach for same-language similarity detection:
 
 1. **Preprocessing**: 
    - Removes comments using common patterns
@@ -77,21 +77,21 @@ The `CodeSimilarityAnalyzer` uses an advanced multi-layered approach optimized f
    - Detects operators and meaningful patterns
    - Extracts tokens while preserving code semantics
 
-3. **Adaptive Similarity Calculation**:
+3. **Similarity Calculation**:
    - **Sequence Similarity** (35%): Token order and structure matching
    - **String Similarity** (30%): Character-level comparison for variable name changes
    - **Token Overlap** (20%): Jaccard similarity for content matching
    - **Structural Patterns** (15%): Programming construct recognition
 
-4. **Intelligent Matching**: 
+4. **Matching**: 
    - One-to-one line matching to prevent false positives
    - Quality-weighted similarity percentage calculation
-   - Adaptive boosting for plagiarism detection scenarios
+   - Boosting for plagiarism detection scenarios
 
 5. **Result Interpretation**:
    - Context-aware similarity scoring
-   - Automatic detection of plagiarism vs. different implementations
-   - Comprehensive reporting with actionable insights
+   - Detection of plagiarism vs. different implementations
+   - Reporting with actionable insights
 
 > 📖 **For detailed algorithm explanation, see [ALGORITHM_DESIGN.md](ALGORITHM_DESIGN.md)**
 
@@ -142,7 +142,7 @@ npm run build
 
 #### Running the Test Suite
 ```bash
-# Run the comprehensive test suite
+# Run the test suite
 npm run test
 # OR manually:
 npm run build && node dist/test_similarity_analyzer.js
@@ -218,8 +218,8 @@ Interpretation: High Similarity - Likely identical or minimal changes
 
 ## Testing and Validation
 
-### Comprehensive Test Suite
-The analyzer includes extensive testing for real-world scenarios:
+### Test Suite
+The analyzer includes testing for real-world scenarios:
 
 ```bash
 # Run Python test suite
@@ -254,7 +254,7 @@ Starting TypeScript Code Similarity Analyzer Test Suite...
 SUCCESS: Both implementations behave consistently!
 ```
 
-### Test Scenarios Validated
+### Test Scenarios
 
 1. **Identical Code Detection** (>90% similarity)
    - Perfect matches with whitespace/comment differences
@@ -263,12 +263,12 @@ SUCCESS: Both implementations behave consistently!
 2. **Variable Name Changes** (60-95% similarity)
    - Variable and method name changes while preserving logic
    - Parameter renames and identifier changes
-   - Critical for detecting modified code attribution
+   - Useful for detecting modified code attribution
 
 3. **Structural Modifications** (30-70% similarity)  
    - Code reorganization and refactoring
    - Method renames and class restructuring
-   - Important for code evolution tracking
+   - For code evolution tracking
 
 4. **Different Implementations** (15-60% similarity)
    - Same algorithm, different approaches (iterative vs recursive)
@@ -291,7 +291,7 @@ SUCCESS: Both implementations behave consistently!
 - **Memory Usage**: Linear scaling with file size
 - **False Positive Rate**: <5% for unrelated code
 
-> 📖 **For detailed testing documentation, see [tests/README.md](tests/README.md)**
+> 📖 **For testing documentation, see [tests/README.md](tests/README.md)**
 
 ## Use Cases and Applications
 
@@ -425,7 +425,7 @@ export PYTHONPATH="${PYTHONPATH}:$(pwd)"
 
 ### Getting Help
 1. Check the test suite for expected behavior examples
-2. Review [ALGORITHM_DESIGN.md](ALGORITHM_DESIGN.md) for detailed explanation
+2. Review [ALGORITHM_DESIGN.md](ALGORITHM_DESIGN.md) for algorithm explanation
 3. Examine sample comparisons in [tests/README.md](tests/README.md)
 4. Report issues with specific file examples and expected vs. actual results
 
