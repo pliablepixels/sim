@@ -1,7 +1,7 @@
 # Code Similarity Analyzer
 
 #### Note: 
-This is AI generated code - Sonnet 4 + Agentic copilot. That is why you'll see pompous commentary in various places. The flow however of how it compares seems reasonable
+This is largely AI generated code - Sonnet 4 + Agentic copilot. That is why you my still see pompous commentary in various places. I started by developing it in python by guiding it on an algorithm I want. I then used it exclusively to create a typescript port as I've largely forgotten TS. 
 
 ## What
 
